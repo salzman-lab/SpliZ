@@ -1,21 +1,16 @@
-process SVD_ZSCORE {
+process PERMUTATIONS {
     tag "${dataname}"
 
     publishDir "${params.outdir}",  mode: "copy", pattern: "*.tsv"
 
     input:
-    val rijk
-    val svd_type
+    
 
     output:
-    path "*.geneMat"    , emit: geneMats
-    path "*.pq"         , emit: pq
-    path "*.tsv"        , emit: tsv
+
 
     script:
-    dataname    = rijk[0]
-    param_stem  = rijk[1]
-    rijk_file   = rijk[2]
+   
 
     """
     svd_zscore.py \\

@@ -28,7 +28,7 @@ ch_input = Channel.fromPath(params.input_file)
 */
 include { CONVERT       } from '../modules/local/convert' 
 include { SVD           } from '../subworkflows/local/svd'
-include { SPLIZ_SITES   } from '../subworkflows/local/spliz_sites'
+//include { SPLIZ_SITES   } from '../subworkflows/local/spliz_sites'
 
 /*
 ========================================================================================
@@ -39,7 +39,10 @@ workflow SPLIZ {
     // If necessary, convert tsv to parquet.
     // Initialize input channel
     if (convert_to_pq) {
-        CONVERT(ch_input)
+        CONVERT(
+            ch_input,
+            params.dataname
+        )
         ch_pq = CONVERT.out.pq
     } else {
         ch_pq = ch_input
@@ -57,10 +60,6 @@ workflow SPLIZ {
         params.svd_type,
     )
 
-    // Step 2: Identify SpliZ sites
-    SPLIZ_SITES (
-        SVD.out.geneMats,
-    )
 
 }
 

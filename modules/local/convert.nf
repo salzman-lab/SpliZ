@@ -1,6 +1,9 @@
 process CONVERT {
+    tag "${dataname}"
+
     input:
     path tsv
+    val dataname
 
     output:
     path "*.pq", emit: pq

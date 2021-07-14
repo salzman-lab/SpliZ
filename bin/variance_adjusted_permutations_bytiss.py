@@ -8,6 +8,8 @@ from statsmodels.stats.multitest import multipletests
 
 def get_args():
   parser = argparse.ArgumentParser(description="calculate p values based on Romano method")
+  parser.add_argument("--input", help="Name of the input file from svd_zscore")
+
   parser.add_argument("--dataname",help="name of dataset to use")
   parser.add_argument("--suffix",help="suffix to save with")
   parser.add_argument("--group_col",help="column to group the data by (e.g. ontology, compartment, tissue)",default="ontology")
@@ -55,13 +57,15 @@ def get_var_df(sub_df, z_col, adj_var, group_col):
   return var_df
 
 def main():
-  print("current working directory",os.getcwd())
   np.random.seed(123)
   alpha = 0.05
-  outpath = "scripts/output/variance_adjusted_permutations/"
+
   args = get_args()
 
-  df = pd.read_parquet("scripts/output/rijk_zscore/{}_sym_SVD_normdonor{}.pq".format(args.dataname,args.suffix),columns=["geneR1A_uniq",args.group_col,"cell","scZ","svd_z0","svd_z1","svd_z2","cell_gene","f0","f1","f2","tissue","compartment"])
+  df = pd.read_parquet(
+      args.input,
+      columns=["geneR1A_uniq", args.group_col, "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+  )
   df = df.drop_duplicates("cell_gene")
   df["tiss_comp"] = df["tissue"] + df["compartment"]
 
@@ -106,7 +110,7 @@ def main():
             sub_df_perm = sub_df.copy()
             if (pval < alpha):
               Tn1_dist = []
-  #            for i in range(args.num_perms):
+              # for i in range(args.num_perms):
               while len(Tn1_dist) < args.num_perms:
                 sub_df_perm[args.group_col] = np.random.permutation(sub_df_perm[args.group_col])
                 var_df = get_var_df(sub_df_perm, z_col, adj_var, args.group_col)
@@ -122,13 +126,6 @@ def main():
 
   out_df["perm_pval_inv"] = 1 - out_df["perm_pval"] 
   out_df["perm_pval2"] = 2*out_df[["perm_pval","perm_pval_inv"]].min(axis=1)
-   # adjust p values separately per z score
-#  for z_col in z_cols:
-#
-#    # check that there's at least one non-nan value
-#    if (out_df[out_df["z_col"] == z_col]["pval"].isna()).sum() < out_df[out_df["z_col"]].shape[0]:
-#      out_df.loc[out_df["z_col"] == z_col, "pval_adj"] = multipletests(out_df.loc[out_df["z_col"] == z_col, "pval"],alpha, method="fdr_bh")[1]
-#    out_df.loc[(out_df["z_col"] == z_col) & (~out_df["perm_pval2"].isna()), "perm_pval2_adj"] = multipletests(out_df.loc[(out_df["z_col"] == z_col) & (~out_df["perm_pval2"].isna()), "perm_pval2"],alpha, method="fdr_bh")[1]
 
   # adjust p values all together
   out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
@@ -136,12 +133,8 @@ def main():
 
   out_df.to_csv("{}{}_outdf_{}-{}_{}{}.tsv".format(outpath,args.dataname,args.group_col, args.sub_col,args.num_perms,args.suffix),sep="\t",index=False)
 
- 
- #   out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
-#  out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
-#  out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
-
   out_df["gene_sub_col"] = out_df["geneR1A_uniq"] + out_df["sub_col"]
+
   # reformat output
   new_out = {"geneR1A_uniq" : [], "num_onts" : [], "sub_col" : []}
   for z_col in z_cols:
@@ -174,4 +167,5 @@ def main():
     new_out_df["f" + str(i)] = new_out_df["geneR1A_uniq"].map(frac_dict)
 
   new_out_df.to_csv("{}{}_pvals_{}-{}_{}{}.tsv".format(outpath,args.dataname,args.group_col, args.sub_col,args.num_perms,args.suffix),sep="\t",index=False)
+
 main()

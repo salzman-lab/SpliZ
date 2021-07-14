@@ -1,5 +1,5 @@
-include { RIJK_ZSCORE   }   from    '../modules/local/rijk_zscore'
-include { SVD_ZSCORE    }   from    '../modules/local/svd_zscore'
+include { RIJK_ZSCORE   }   from    '../../modules/local/rijk_zscore'
+include { SVD_ZSCORE    }   from    '../../modules/local/svd_zscore'
 
 workflow SVD {
     take:
@@ -19,21 +19,19 @@ workflow SVD {
         ch_pq,
         pin_S,
         pin_z,
+        bound,
         light,
-        unfilt,
-        v2,
-        bound
+        SICILIAN
     )
-
-    // Step 2: Calculate SVD z-score
+ 
+     // Step 2: Calculate SVD z-score
     SVD_ZSCORE (
         RIJK_ZSCORE.out.pq,
-        temp,
         svd_type      
     )
     
     emit: 
     geneMats    = SVD_ZSCORE.out.geneMats
-    svd         = SVD_ZSCORE.out.svd
+    svd         = SVD_ZSCORE.out.pq
 
 }

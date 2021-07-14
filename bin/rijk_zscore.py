@@ -367,14 +367,13 @@ def main():
   for let in letters:
     df["zcontrib" + let] = df["numReads"] * df["nSijk" + let] / np.sqrt(df["n.g"])
 
-  sub_cols = ["cell","gene","tissue","compartment","free_annotation","ontology","scZ","n.g_Start","n.g_End"] 
+  sub_cols = ["cell", "gene", "tissue", "compartment", "free_annotation", "ontology", "scZ", "n.g_Start", "n.g_End"] 
 
-  df.drop_duplicates("cell_gene")[sub_cols].to_csv(outname_tsv, index=False,sep="\t")
+  df.drop_duplicates("cell_gene")[sub_cols].to_csv(outname_tsv, index=False, sep="\t")
   df.to_parquet(outname_pq)
 
   logging.info("Wrote files")
 
   logging.info("Completed")
-
 
 main()
