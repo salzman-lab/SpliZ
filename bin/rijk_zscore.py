@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import argparse
 import datetime 
 import numpy as np
@@ -7,20 +5,25 @@ import pandas as pd
 import time
 from tqdm import tqdm
 import warnings
-import logging
 warnings.filterwarnings("ignore")
 
 def get_args():
   parser = argparse.ArgumentParser(description="calculate splicing scores per gene/cell")
-  parser.add_argument("--dataname", help="name of dataset to use")
-  parser.add_argument("--parquet", help="input parquet file")
-  parser.add_argument("--pinning_S", type=float, help="pinning level for S_ijks")
-  parser.add_argument("--pinning_z", type=float, help="pinning level for zs")
-  parser.add_argument("--light", action="store_true", help="if included, don't calculate extra columns (saves time)")
-  parser.add_argument("--unfilt", action="store_true", help="don't filter by SICILIAN")
-  parser.add_argument("--v2", action="store_true", help="filter by SICILIAN v2")
-  parser.add_argument("--lower_bound", type=int, help="only include cell/gene pairs the have more than this many junctional reads for the gene")
-  parser.add_argument("--outname", type=str, help="Name of the output file")
+  parser.add_argument("--dataname",help="name of dataset to use")
+  parser.add_argument("--parquet",help="input parquet file")
+  parser.add_argument("--pinning_S",type=float,help="pinning level for S_ijks")
+  parser.add_argument("--pinning_z",type=float,help="pinning level for zs")
+  parser.add_argument("--light",action="store_true",help="if included, don't calculate extra columns (saves time)")
+  parser.add_argument("--verbose",action="store_true",help="print times")
+  parser.add_argument("--unfilt",action="store_true",help="don't filter by SICILIAN")
+  parser.add_argument("--v2",action="store_true",help="filter by SICILIAN v2")
+  parser.add_argument("--SVD",action="store_true",help="perform SVD z score calculation")
+
+#  parser.add_argument("--bound_lower",action="store_true",help="include lower bound on number of junctional reads a cell + gene needs to have in order to get a z score")
+
+  parser.add_argument("--lower_bound",type=int,help="only include cell/gene pairs the have more than this many junctional reads for the gene")
+
+
   args = parser.parse_args()
   return args
 
@@ -104,13 +107,6 @@ def normalize_Sijks(df,let):
   return df
 
 def main():
-  logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')  
-  
-  logging.info("Starting.")
-
 #  SVD = 
   let_dict = {"A" : "acc", "B" : "don"}
   t0 = time.time()
@@ -118,10 +114,8 @@ def main():
   outpath = "scripts/output/rijk_zscore/"
 
   df = pd.read_parquet(args.parquet,columns=["juncPosR1A","geneR1A_uniq","juncPosR1B","numReads","cell","splice_ann","tissue","compartment","free_annotation","refName_newR1","called","chrR1A","exon_annR1A","exon_annR1B"])
-  
-  
-  logging.info("Read in parquet")
-
+  if args.verbose:
+    print("read in parquet",datetime.timedelta(seconds = time.time() - t0))
   if "missing_domains" in df.columns and not args.light:
     domain_breakdown = True
   else:
@@ -170,7 +164,8 @@ def main():
   df.loc[idx,"geneR1A_uniq"] = "unknown_" + df["chrR1A"].astype(str) + "_" + (df.loc[idx]["juncPosR1A"] - df.loc[idx]["juncPosR1A"] % bin_size).astype(str)
   print("replaced gene names",df[(df["geneR1A_uniq"].isin(["unknown",""])) | (df["geneR1A_uniq"].isna())].shape[0])
 
-  logging.info("Replace with geneR1B")
+  if args.verbose:
+    print("replace with geneR1B",datetime.timedelta(seconds = time.time() - t0))
 
   # get sign of gene to adjust z score
   sign_df = df.drop_duplicates("geneR1A_uniq")
@@ -183,8 +178,8 @@ def main():
   sign_df[["geneR1A_uniq","strandA","sign"]]
   sign_dict = pd.Series(sign_df.sign.values,index=sign_df.geneR1A_uniq).to_dict()
   df["sign"] = df["geneR1A_uniq"].map(sign_dict).fillna(1)
-
-  logging.info("Get sign")
+  if args.verbose:
+    print("get sign",datetime.timedelta(seconds = time.time() - t0))
 
 #  df = df[df["tissue"] != "Pancreas"]
 
@@ -224,9 +219,8 @@ def main():
 
 
   df = df[(df["max_rank_don"] > 1) | (df["max_rank_acc"] > 1)]
-
-  logging.info("Remove constitutive")
-
+  if args.verbose:
+    print("remove constitutive",datetime.timedelta(seconds = time.time() - t0))
   # require at least args.lower_bound nonconstitutive spliced reads
   df["noncon_count"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df = df[df["noncon_count"] > args.lower_bound]
@@ -240,15 +234,16 @@ def main():
     # create donor identifier
     df = prepare_df(df, let, rank_by_donor, rev_let, let_dict)
 
-    logging.info("Prepare df")
+    if args.verbose:
+      print("prepare_df",datetime.timedelta(seconds = time.time() - t0))
     df = calc_Sijk(df,let,args.pinning_S, let_dict)
-    
-    logging.info("Calculate Sijk")
+    if args.verbose:
+      print("calc_sijk",datetime.timedelta(seconds = time.time() - t0))
 
     df = normalize_Sijks(df,let)
+    if args.verbose:
+      print("normalize_Sijk",datetime.timedelta(seconds = time.time() - t0))
 
-    logging.info("Normalize Sijk")
-    
     # remove those with variance == 0
     df = df[df["sijk{}_var".format(let)] != 0]
 
@@ -261,7 +256,8 @@ def main():
     df["z_" + let] = df["sign"] * df.groupby("cell_gene")["mult"].transform("sum")
     df["scaled_z_" + let] = df["z_" + let] / np.sqrt(df["n.g_" + let])
 
-    logging.info("Calc z")
+    if args.verbose:
+      print("calc_z",datetime.timedelta(seconds = time.time() - t0))
 
     ############## end modify Sijk ####################
     df["cell_gene_junc"] = df["cell_gene"] + df["refName_newR1"]
@@ -323,9 +319,8 @@ def main():
     calc_dfs[let] = df
 
   df = calc_dfs["A"].merge(calc_dfs["B"],on="cell_gene_junc",how="outer",suffixes=("","_x"))
-  
-  logging.info("Merged")
-  
+  if args.verbose:
+    print("merged")
   for cx in [x for x in df.columns if x.endswith("_x")]:
     c = cx[:-2]
     df.loc[df[c].isna(),c] = df.loc[df[c].isna(),cx]
@@ -356,8 +351,9 @@ def main():
   df.loc[idx,"z"] = (df.loc[idx,"z_A"] - df.loc[idx,"z_B"])/np.sqrt(2 )
   df.loc[idx,"scZ"] = (df.loc[idx,"scaled_z_A"] - df.loc[idx,"scaled_z_B"])/np.sqrt(2 )
 
-  logging.info("Avg z")
-  
+  if args.verbose:
+    print("avg z",datetime.timedelta(seconds = time.time() - t0))
+
 #  df["negz_B"] = -1*df["z_B"]
 #  df["z"] = df[["z_A","negz_B"]].mean(axis=1)
 
@@ -406,17 +402,63 @@ def main():
   for let in ["A","B"]:
     df["zcontrib" + let] = df["numReads"] * df["nSijk" + let] / np.sqrt(df["n.g"])
 
-  sub_cols = ["cell","geneR1A_uniq","tissue","compartment","free_annotation","ontology","scZ","n.g_A","n.g_B"] 
+  ##### PERFORM SVD ZSCORE CALCULATION #####
+
+  if args.SVD:
+    letters = ["A","B"]
+    for let in letters:
+      df["zcontrib{}_rep".format(let)] = df["zcontrib" + let].fillna(0)
+      df["juncPosR1" + let] = df["juncPosR1" + let].astype(int).astype(str) + "_" + let
+  
+    k = 3 # number of components to include
+    loads = {"f{}".format(i) : {} for i in range(k)}
+    zs = {"svd_z{}".format(i) : {} for i in range(k)}
+    
+    for gene, gene_df in tqdm(df.groupby("geneR1A_uniq")):
+      
+      # get zcontrib matrix
+      gene_mats = []
+      for let in letters:
+        gene_mat = gene_df.pivot_table(index="cell_gene",columns="juncPosR1{}".format(let),values="zcontrib{}_rep".format(let),fill_value=0)
+        gene_mats.append(gene_mat)
+      gene_mat = gene_mats[0].merge(gene_mats[1],on="cell_gene")
+      
+      # calculate svd
+      u, s, vh = np.linalg.svd(gene_mat)
+      
+      if len(s) >= k:
+        # calculate new z scores based on svd
+        new_zs = gene_mat.dot(np.transpose(vh[:k,:]))
+    
+        # calculate load on each component
+        load = np.square(s)/sum(np.square(s))
+    
+        # save new zs and fs in dictionaries to save later
+        for i in range(k):
+          loads["f{}".format(i)][gene] = load[i]
+          zs["svd_z{}".format(i)].update(pd.Series(new_zs[i].values,index=new_zs.index).to_dict())
+    
+        # save loadings
+        v_out = pd.DataFrame(vh,columns=gene_mat.columns)
+        v_out.to_csv("{}SVD/{}_{}_S_{}_z_{}_b_{}{}.tsv".format(outpath, gene,args.dataname, args.pinning_S, args.pinning_z, args.lower_bound, suff), index=False, sep = "\t")
+        
+    for i in range(k):
+      df["f{}".format(i)] = df["geneR1A_uniq"].map(loads["f{}".format(i)])
+      df["svd_z{}".format(i)] = df["cell_gene"].map(zs["svd_z{}".format(i)])
+    df["svd_z_sumsq"] = (df[["svd_z{}".format(i) for i in range(k)]]**2).sum(axis=1)
+
+    sub_cols = ["cell","geneR1A_uniq","tissue","compartment","free_annotation","ontology","scZ","svd_z_sumsq","n.g_A","n.g_B"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)]
+  else:
+    sub_cols = ["cell","geneR1A_uniq","tissue","compartment","free_annotation","ontology","scZ","n.g_A","n.g_B"] 
 
   df.drop_duplicates("cell_gene")[sub_cols].to_csv("{}{}_sym_S_{}_z_{}_b_{}{}_subcol.tsv".format(outpath,args.dataname,args.pinning_S, args.pinning_z, args.lower_bound, suff),index=False,sep="\t")
-  #df.to_parquet("{}{}_sym_S_{}_z_{}_b_{}{}.pq".format(outpath,args.dataname,args.pinning_S, args.pinning_z, args.lower_bound, suff))
-  
-  df.to_parquet(args.outname)
+  df.to_parquet("{}{}_sym_S_{}_z_{}_b_{}{}.pq".format(outpath,args.dataname,args.pinning_S, args.pinning_z, args.lower_bound, suff))
 
-  logging.info("Wrote parquet")
-  logging.info("Wrote files")
+  if args.verbose:
+    print("wrote parquet",datetime.timedelta(seconds = time.time() - t0))
 
-  logging.info("Completed.")
+  if args.verbose:
+    print("wrote files",datetime.timedelta(seconds = time.time() - t0))
 
 
 
