@@ -9,7 +9,6 @@ library(data.table)
 library(Rfast)
 
 args <- commandArgs(trailingOnly = TRUE)
-print(args)
 loadings_suffix = args[1]
 output_file_suffix = args[2]
 p_value_file = args[3]

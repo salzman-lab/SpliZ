@@ -20,12 +20,15 @@ if (input_file.extension == "tsv") {
 
 ch_input = Channel.fromPath(params.input_file)
 
+
 /*
 ========================================================================================
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { CONVERT } from '../modules/local/convert' 
+include { CONVERT       } from '../modules/local/convert' 
+include { SVD           } from '../subworkflows/local/svd'
+include { SPLIZ_SITES   } from '../subworkflows/local/spliz_sites'
 
 /*
 ========================================================================================
@@ -43,15 +46,20 @@ workflow SPLIZ {
     }
 
     // Step 1: SVD calculation
-    SVD(
-        dataname,
+    SVD (
+        params.dataname,
         ch_pq,
-        pin_S,
-        pin_z, 
-        bound,
-        light,
-        SICILIAN,
-        svd_type,
+        params.pin_S,
+        params.pin_z, 
+        params.bounds,
+        params.light,
+        params.SICILIAN,
+        params.svd_type,
+    )
+
+    // Step 2: Identify SpliZ sites
+    SPLIZ_SITES (
+        SVD.out.geneMats,
     )
 
 }
