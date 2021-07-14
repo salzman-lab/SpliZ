@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
+import sys
 import argparse
-import datetime 
 import numpy as np
 import pandas as pd
-import time
 from tqdm import tqdm
 import warnings
 import logging
@@ -17,8 +16,8 @@ def get_args():
   parser.add_argument("--pinning_S", type=float, help="pinning level for S_ijks")
   parser.add_argument("--pinning_z", type=float, help="pinning level for zs")
   parser.add_argument("--lower_bound", type=int, help="only include cell/gene pairs the have more than this many junctional reads for the gene")
-  parser.add_argument("--light", action="store_true", help="if included, don't calculate extra columns (saves time)")
-  parser.add_argument("--isSICILIAN", action="store_true", help="Is SICILIAN input file")
+  parser.add_argument("--isLight", help="if included, don't calculate extra columns (saves time)")
+  parser.add_argument("--isSICILIAN", help="Is SICILIAN input file")
   parser.add_argument("--outname", type=str, help="Name of the output file")
   args = parser.parse_args()
   return args
@@ -26,15 +25,15 @@ def get_args():
 def prepare_df(df, let, rank_by_donor, rev_let, let_dict):
   
   # create donor identifier
-  df["pos{}_group".format(let)] = df["juncPosR1{}".format(let)].astype(str) + df["geneR1A_uniq"]
-  df["rank_" + let_dict[let]] = df.groupby("pos{}_group".format(let))["juncPosR1{}".format(rev_let[let])].rank(method="dense")
+  df["pos{}_group".format(let)] = df["junc{}".format(let)].astype(str) + df["gene"]
+  df["rank_" + let_dict[let]] = df.groupby("pos{}_group".format(let))["junc{}".format(rev_let[let])].rank(method="dense")
 
   # remove consitutive splicing
   df["max_rank"] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_" + let_dict[let]].max())
   df = df[df["max_rank"] > 1]
   
   if not rank_by_donor:
-    df["rank_" + let_dict[let]] = df.groupby("geneR1A_uniq")["juncPosR1B"].rank(method="dense")
+    df["rank_" + let_dict[let]] = df.groupby("gene")["juncEnd"].rank(method="dense")
   
   return df
 
@@ -85,22 +84,31 @@ def normalize_Sijks(df,let):
 
   # calculate mean of SijkA's per gene
   df["n_s"] = df["numReads"] * df["S_ijk_" + let]
-  df["num"] = df.groupby("geneR1A_uniq")["n_s"].transform("sum")
-  df["n_gene"] = df.groupby("geneR1A_uniq")["numReads"].transform("sum")
+  df["num"] = df.groupby("gene")["n_s"].transform("sum")
+  df["n_gene"] = df.groupby("gene")["numReads"].transform("sum")
   df["sijk{}_mean".format(let)] = df["num"] / df["n_gene"]
 
   # calculate standard deviation of SijkA's per gene
-  # temp_df["n_g"] = temp_df["cell_gene"].map(temp_df.groupby("cell_gene")["n_sijk"].sum())
-  # temp_df["sijkA_mean"] = temp_df["num"] / temp_df["n_gene"]
-  # temp_df["S_ijk_A_mean"] = temp_df["geneR1A_uniq"].map(temp_df.groupby("geneR1A_uniq")["S_ijk_A"].mean())
   df["sd_num"] = df["numReads"] * (df["S_ijk_" + let] - df["sijk{}_mean".format(let)])**2
-  df["num"] = df.groupby("geneR1A_uniq")["sd_num"].transform("sum")
+  df["num"] = df.groupby("gene")["sd_num"].transform("sum")
   df["sijk{}_var".format(let)] = df["num"] / df["n_gene"]
 
   return df
 
+def contains_required_cols(df):
+
+  # Function to check if the input file contains the required columns for processing
+  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
+  df_cols = list(df.columns)
+  if set(required_cols) == set(df_cols):
+    return True
+  else:
+    return False
+
 def main():
   args = get_args()
+  light = bool(args.isLight)
+  SICILIAN = bool(args.isSICILIAN)
 
   outname_log = "{}.log".format(args.outname)
   outname_tsv = "{}.tsv".format(args.outname)
@@ -112,16 +120,37 @@ def main():
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')  
   
-  logging.info("Starting.")
+  logging.info("Starting")
 
-  #  SVD = 
-  let_dict = {"A" : "acc", "B" : "don"}
+  let_dict = {"Start" : "acc", "End" : "don"}
 
-  df = pd.read_parquet(args.parquet,columns=["juncPosR1A","geneR1A_uniq","juncPosR1B","numReads","cell","splice_ann","tissue","compartment","free_annotation","refName_newR1","called","chrR1A","exon_annR1A","exon_annR1B"])
+  logging.info("Begin reading in parquet")
+
+  df = pd.read_parquet(
+    args.parquet,
+    columns=["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
+  )
   
-  logging.info("Read in parquet")
+  logging.info("Finished reading in parquet")
 
-  if "missing_domains" in df.columns and not args.light:
+  logging.info("Input column check")
+
+  if contains_required_cols(df): 
+    logging.info("Passed input column check")
+  else:
+    logging.info("Failed input column check! Exiting")
+    sys.exit()
+
+  logging.info("Rename SICILIAN columns")
+
+  cols_dict = {
+    "geneR1A_uniq": "gene",
+    "juncPosR1A": "juncStart",
+    "juncPosR1B": "juncEnd"
+  }
+  df.rename(columns=cols_dict, inplace=True)
+
+  if "missing_domains" in df.columns and not light:
     domain_breakdown = True
   else:
     domain_breakdown = False
@@ -129,7 +158,7 @@ def main():
   df.reset_index(drop=True,inplace=True)
   rank_by_donor = True
 
-  if bool(args.isSICILIAN):
+  if SICILIAN:
     df = df[df["called"] == 1]
   else:
     # only include junctions with more than 1 read in the dataset
@@ -138,36 +167,35 @@ def main():
 
   # use second location gene name if first is unknown
 
-  #  if "refName_newR1" in df.columns:
   df["geneR1B_uniq"] = df["refName_newR1"].str.split("|").str[1].str.split(":").str[1]
-  idx = df[(df["geneR1A_uniq"].isin(["unknown",""])) | (df["geneR1A_uniq"].isna())].index
-  df.loc[idx,"geneR1A_uniq"] = df.loc[idx,"geneR1B_uniq"]
+  idx = df[(df["gene"].isin(["unknown",""])) | (df["gene"].isna())].index
+  df.loc[idx,"gene"] = df.loc[idx,"geneR1B_uniq"]
 
   bin_size = 100000
   # bin unknown genes
-  idx = df[(df["geneR1A_uniq"] == "") | (df["geneR1A_uniq"] == "unknown") | (df["geneR1A_uniq"].isna())].index
-  df.loc[idx,"geneR1A_uniq"] = "unknown_" + df["chrR1A"].astype(str) + "_" + (df.loc[idx]["juncPosR1A"] - df.loc[idx]["juncPosR1A"] % bin_size).astype(str)
-  print("replaced gene names",df[(df["geneR1A_uniq"].isin(["unknown",""])) | (df["geneR1A_uniq"].isna())].shape[0])
+  idx = df[(df["gene"] == "") | (df["gene"] == "unknown") | (df["gene"].isna())].index
+  df.loc[idx,"gene"] = "unknown_" + df["chrR1A"].astype(str) + "_" + (df.loc[idx]["juncStart"] - df.loc[idx]["juncStart"] % bin_size).astype(str)
+  print("replaced gene names",df[(df["gene"].isin(["unknown",""])) | (df["gene"].isna())].shape[0])
 
   logging.info("Replace with geneR1B")
 
   # get sign of gene to adjust z score
-  sign_df = df.drop_duplicates("geneR1A_uniq")
+  sign_df = df.drop_duplicates("gene")
   sign_df["strandA"] = sign_df["refName_newR1"].str.split("|").str[0].str.split(":").str[3]
   sign_df["strandB"] = sign_df["refName_newR1"].str.split("|").str[1].str.split(":").str[3]
   idx = sign_df[sign_df["strandA"] == "?"].index
   sign_df.loc[idx,"strandA"] = sign_df.loc[idx,"strandB"]
   sign_df["sign"] = 1
   sign_df.loc[sign_df["strandA"] == "-","sign"] = -1
-  sign_df[["geneR1A_uniq","strandA","sign"]]
-  sign_dict = pd.Series(sign_df.sign.values,index=sign_df.geneR1A_uniq).to_dict()
-  df["sign"] = df["geneR1A_uniq"].map(sign_dict).fillna(1)
+  sign_df[["gene","strandA","sign"]]
+  sign_dict = pd.Series(sign_df.sign.values,index=sign_df.gene).to_dict()
+  df["sign"] = df["gene"].map(sign_dict).fillna(1)
 
   logging.info("Get sign")
 
-  df["cell_gene"] = df["cell"] + df["geneR1A_uniq"]
+  df["cell_gene"] = df["cell"] + df["gene"]
 
-  rev_let = {"A" : "B", "B" : "A"}
+  rev_let = {"Start" : "End", "End" : "Start"}
 
   if domain_breakdown:
     split_dict = {True : ["ann", "dom_ch"], False : ["unann", "dom_unch"]}
@@ -175,17 +203,17 @@ def main():
     split_dict = {True : ["ann"], False : ["unann"]}
 
   # remove constitutive splicing
-  df["posA_group"] = df["juncPosR1A"].astype(str) + df["geneR1A_uniq"]
-  df["posB_group"] = df["juncPosR1B"].astype(str) + df["geneR1A_uniq"]
+  df["posA_group"] = df["juncStart"].astype(str) + df["gene"]
+  df["posB_group"] = df["juncEnd"].astype(str) + df["gene"]
 
-  df["rank_acc"] = df.groupby("posA_group")["juncPosR1B"].rank(method="dense")
-  df["rank_don"] = df.groupby("posB_group")["juncPosR1A"].rank(method="dense")
+  df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
+  df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
 
   df["max_rank_acc"] = df["posA_group"].map(df.groupby("posA_group")["rank_acc"].max())
   df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
 
   # add domain columns
-  letters = ["A","B"]
+  letters = ["Start", "End"]
   for let in letters:
 
     if domain_breakdown:
@@ -206,7 +234,7 @@ def main():
 
   calc_dfs = {}
 
-  for let in tqdm(["A","B"]):
+  for let in tqdm(letters):
     df = full_df
     # create donor identifier
     df = prepare_df(df, let, rank_by_donor, rev_let, let_dict)
@@ -236,7 +264,7 @@ def main():
     ############## end modify Sijk ####################
     df["cell_gene_junc"] = df["cell_gene"] + df["refName_newR1"]
 
-    if not args.light:
+    if not light:
       # calculate the z score
       df["x_sijk"] = df["S_ijk_{}".format(let)] * df["n_sijk"]
 
@@ -259,7 +287,7 @@ def main():
       df.loc[df["z_{}".format(let)] < low_quant,"z_{}".format(let)] = low_quant
       df.loc[df["z_{}".format(let)] > high_quant,"z_{}".format(let)] = high_quant
 
-    if not args.light:
+    if not light:
       # break down z score by annotation
       for k,v in split_dict.items():
         df["num_{}".format(v[0])] = df["cell_gene"].map(df[df["splice_ann"] == k].groupby("cell_gene")["x_sijk"].sum())
@@ -280,7 +308,7 @@ def main():
 
     calc_dfs[let] = df
 
-  df = calc_dfs["A"].merge(calc_dfs["B"],on="cell_gene_junc",how="outer",suffixes=("","_x"))
+  df = calc_dfs["Start"].merge(calc_dfs["End"],on="cell_gene_junc",how="outer",suffixes=("","_x"))
   
   logging.info("Merged")
   
@@ -292,61 +320,61 @@ def main():
 
   # average two scores (negate one of them)
 
-  grouped = df.groupby('geneR1A_uniq')
-  for let in ["A","B"]:
+  grouped = df.groupby('gene')
+  for let in letters:
     z_dict = pd.Series(calc_dfs[let]["z_" + let].values,index=calc_dfs[let].cell_gene).to_dict()
     df["z_" + let] = df["cell_gene"].map(z_dict)
     scz_dict = pd.Series(calc_dfs[let]["scaled_z_" + let].values,index=calc_dfs[let].cell_gene).to_dict()
     df["scaled_z_" + let] = df["cell_gene"].map(scz_dict)
 
-  df["cov"] = df["geneR1A_uniq"].map(grouped.apply(lambda x: x['z_A'].cov(x['z_B'])))
+  df["cov"] = df["gene"].map(grouped.apply(lambda x: x['z_Start'].cov(x['z_End'])))
 
-  idx = df[df["z_A"].isna()].index
-  df.loc[idx,"z"] = -df.loc[idx,"z_B"]
-  df.loc[idx,"scZ"] = -df.loc[idx,"scaled_z_B"]
+  idx = df[df["z_Start"].isna()].index
+  df.loc[idx,"z"] = -df.loc[idx,"z_End"]
+  df.loc[idx,"scZ"] = -df.loc[idx,"scaled_z_End"]
 
-  idx = df[df["z_B"].isna()].index
-  df.loc[idx,"z"] = df.loc[idx,"z_A"]
-  df.loc[idx,"scZ"] = df.loc[idx,"scaled_z_A"]
+  idx = df[df["z_End"].isna()].index
+  df.loc[idx,"z"] = df.loc[idx,"z_Start"]
+  df.loc[idx,"scZ"] = df.loc[idx,"scaled_z_Start"]
 
-  idx = df[(~df["z_A"].isna()) & (~df["z_B"].isna())].index
-  df.loc[idx,"z"] = (df.loc[idx,"z_A"] - df.loc[idx,"z_B"])/np.sqrt(2 )
-  df.loc[idx,"scZ"] = (df.loc[idx,"scaled_z_A"] - df.loc[idx,"scaled_z_B"])/np.sqrt(2 )
+  idx = df[(~df["z_Start"].isna()) & (~df["z_End"].isna())].index
+  df.loc[idx,"z"] = (df.loc[idx,"z_Start"] - df.loc[idx,"z_End"])/np.sqrt(2 )
+  df.loc[idx,"scZ"] = (df.loc[idx,"scaled_z_Start"] - df.loc[idx,"scaled_z_End"])/np.sqrt(2 )
 
   logging.info("Avg z")
   
-  if not args.light:
+  if not light:
     # average two scores for split z
     for v in split_dict.values():
       for y in v:
-        grouped = df.groupby('geneR1A_uniq')
-        df["cov_{}".format(y)] = df["geneR1A_uniq"].map(grouped.apply(lambda x: x['z_A_{}'.format(y)].cov(x['z_B_{}'.format(y)])))
+        grouped = df.groupby('gene')
+        df["cov_{}".format(y)] = df["gene"].map(grouped.apply(lambda x: x['z_Start_{}'.format(y)].cov(x['z_End_{}'.format(y)])))
   
-        idx = df[df["z_A_{}".format(y)].isna()].index
-        df.loc[idx,"z_{}".format(y)] = -df.loc[idx,"z_B_{}".format(y)]
+        idx = df[df["z_Start_{}".format(y)].isna()].index
+        df.loc[idx,"z_{}".format(y)] = -df.loc[idx,"z_End_{}".format(y)]
       
-        idx = df[df["z_B_{}".format(y)].isna()].index
-        df.loc[idx,"z_{}".format(y)] = df.loc[idx,"z_A_{}".format(y)]
+        idx = df[df["z_End_{}".format(y)].isna()].index
+        df.loc[idx,"z_{}".format(y)] = df.loc[idx,"z_Start_{}".format(y)]
       
-        idx = df[(~df["z_A_{}".format(y)].isna()) & (~df["z_B_{}".format(y)].isna())].index
-        df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_A_{}".format(y)] - df.loc[idx,"z_B_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
+        idx = df[(~df["z_Start_{}".format(y)].isna()) & (~df["z_End_{}".format(y)].isna())].index
+        df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_Start_{}".format(y)] - df.loc[idx,"z_End_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
 
   df["ontology"] = df["tissue"] + df["compartment"] + df["free_annotation"]
   
   df["n.g"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df["scaled_z"] = df["z"] / np.sqrt(df["n.g"])
 
-  for let in ["A","B"]:
+  for let in letters:
     df["zcontrib" + let] = df["numReads"] * df["nSijk" + let] / np.sqrt(df["n.g"])
 
-  sub_cols = ["cell","geneR1A_uniq","tissue","compartment","free_annotation","ontology","scZ","n.g_A","n.g_B"] 
+  sub_cols = ["cell","gene","tissue","compartment","free_annotation","ontology","scZ","n.g_Start","n.g_End"] 
 
   df.drop_duplicates("cell_gene")[sub_cols].to_csv(outname_tsv, index=False,sep="\t")
   df.to_parquet(outname_pq)
 
   logging.info("Wrote files")
 
-  logging.info("Completed.")
+  logging.info("Completed")
 
 
 main()
