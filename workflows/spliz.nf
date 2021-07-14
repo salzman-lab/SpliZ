@@ -44,16 +44,14 @@ workflow SPLIZ {
 
     // Step 1: SVD calculation
     SVD(
-        dataname, 
+        dataname,
         ch_pq,
         pin_S,
-        pin_Z,
+        pin_z, 
+        bound,
         light,
-        unfilt,
-        v2,
-        bound, 
-        temp,
-        svd_type
+        SICILIAN,
+        svd_type,
     )
 
 }
