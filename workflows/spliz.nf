@@ -45,7 +45,7 @@ workflow SPLIZ {
             ch_input,
             params.dataname
         )
-        ch_pq = CONVERT.out.pq
+        ch_pq = CONVERT_PARQUET.out.pq
     } 
 
     // Step 1: Calculate RIJK zscore
@@ -59,18 +59,29 @@ workflow SPLIZ {
         params.SICILIAN
     )
  
-     // Step 2: Calculate SVD zscore
+     // Step 2: Calculate SplizVD
     CALC_SPLIZVD (
-        RIJK_ZSCORE.out.pq,
+        CALC_RIJK_ZSCORE.out.pq,
         params.svd_type      
     )
 
     // Step 3: Calculate variance adjusted permutations
     PVAL_PERMUTATIONS (
-        SVD_ZSCORE.out.pq,
+        CALC_SPLIZVD.out.pq,
         params.n_perms,
         params.group_col,
         params.sub_col
+    )
+
+    CALC_SPLIZVD.out.geneMats
+        .collect()
+        .map { file -> file.name }
+        .set{ ch_geneMats }
+
+    // Step 4: Find SpliZ sites
+    FIND_SPLIZ_SITES (
+        CALC_SPLIZVD.out.geneMats, 
+        PVAL_PERMUTATIONS.out.svd_pvals
     )
 }
 
