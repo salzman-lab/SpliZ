@@ -1,8 +1,12 @@
 process CALC_RIJK_ZSCORE {
-    tag "${dataname}"
-
-    publishDir "${params.outdir}/SpliZ_values"  , mode: 'copy', pattern: '*.tsv'
-    publishDir "${params.outdir}/logs"          , mode: 'copy', pattern: '*.log'
+    tag "${params.dataname}"
+    label 'process_high'
+    publishDir "${params.outdir}/SpliZ_values", 
+        mode: 'copy', 
+        pattern: '*.tsv'
+    publishDir "${params.outdir}/logs", 
+        mode: 'copy', 
+        pattern: '*.log'
 
     input:
     val dataname

@@ -97,10 +97,9 @@ def normalize_Sijks(df,let):
 
   return df
 
-def contains_required_cols(df):
+def contains_required_cols(df, required_cols):
 
   # Function to check if the input file contains the required columns for processing
-  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
   df_cols = list(df.columns)
   if set(required_cols) == set(df_cols):
     return True
@@ -124,20 +123,20 @@ def main():
 
   logging.info("Begin reading in parquet")
 
-  df = pd.read_parquet(
-    args.parquet,
-    columns=["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
-  )
+  df = pd.read_parquet(args.parquet)
   
   logging.info("Finished reading in parquet")
 
   logging.info("Input column check")
 
-  if contains_required_cols(df): 
+  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
+  if contains_required_cols(df, required_cols): 
     logging.info("Passed input column check")
   else:
-    logging.info("Failed input column check! Exiting")
-    sys.exit()
+    logging.exception("Failed input column check! Exiting")
+    sys.exit(1)
+
+  df = df[required_cols]
 
   logging.info("Rename SICILIAN columns")
 

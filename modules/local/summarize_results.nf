@@ -1,7 +1,9 @@
 process SUMMARIZE_RESULTS {
     tag "${params.dataname}"
-
-    publishDir "${params.outdir}",  mode: "copy", pattern: "*.tsv"
+    label 'process_low'
+    publishDir "${params.outdir}",  
+        mode: "copy", 
+        pattern: "*.tsv"
 
     input:
     path perm_pvals

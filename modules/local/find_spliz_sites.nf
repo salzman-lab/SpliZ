@@ -1,7 +1,9 @@
 process FIND_SPLIZ_SITES {
     tag "${params.dataname}"
-
-    publishDir "${params.outdir}/SpliZ_sites",  mode: "copy", pattern: "*.tsv"
+    label 'process_medium'
+    publishDir "${params.outdir}/SpliZ_sites",  
+        mode: "copy", 
+        pattern: "*.tsv"
 
     input:
     path ch_geneMats

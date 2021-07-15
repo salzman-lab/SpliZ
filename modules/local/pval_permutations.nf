@@ -1,7 +1,9 @@
 process PVAL_PERMUTATIONS {
-    tag "${dataname}"
-
-    publishDir "${params.outdir}/variance_adjusted_permutations",  mode: "copy", pattern: "*.tsv"
+    tag "${params.dataname}"
+    label 'process_medium'
+    publishDir "${params.outdir}/variance_adjusted_permutations",  
+        mode: "copy", 
+        pattern: "*.tsv"
 
     input:
     val splizvd
