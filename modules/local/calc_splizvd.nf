@@ -18,7 +18,7 @@ process CALC_SPLIZVD {
     rijk_pq         = rijk[2]
 
     outname_pq      = "${dataname}_sym_SVD_${svd_type}_${param_stem}.pq"
-    outname_tsv     = "${dataname}_sym_SVD_${svd_type}_${param_stem}.tsv"
+    outname_tsv     = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
 
     """
     svd_zscore.py \\
