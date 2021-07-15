@@ -31,6 +31,7 @@ include { CALC_RIJK_ZSCORE      }   from   '../modules/local/calc_rijk_zscore'
 include { CALC_SPLIZVD          }   from   '../modules/local/calc_splizvd'
 include { PVAL_PERMUTATIONS     }   from   '../modules/local/pval_permutations'
 include { FIND_SPLIZ_SITES      }   from   '../modules/local/find_spliz_sites'
+include { SUMMARIZE             }   from   '../modules/local/summarize'
 
 /*
 ========================================================================================
@@ -73,15 +74,24 @@ workflow SPLIZ {
         params.sub_col
     )
 
-    CALC_SPLIZVD.out.geneMats
-        .collect()
-        .map { file -> file.name }
-        .set{ ch_geneMats }
+    PVAL_PERMUTATIONS.out.perm_pvals
+        .set{ ch_pval_permutations }
 
     // Step 4: Find SpliZ sites
     FIND_SPLIZ_SITES (
         CALC_SPLIZVD.out.geneMats, 
-        PVAL_PERMUTATIONS.out.svd_pvals
+        ch_pval_permutations
+    )
+
+    // Step 5: Summarize results
+    SUMMARIZE (
+        ch_pval_permutations,
+        FIND_SPLIZ_SITES.out.first_evec,
+        FIND_SPLIZ_SITES.out.second_evec,
+        FIND_SPLIZ_SITES.out.third_evec,
+        CALC_SPLIZVD.out.tsv,
+        params.group_col,
+        params.sub_col
     )
 }
 

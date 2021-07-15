@@ -14,7 +14,7 @@ def get_args():
   parser.add_argument("--group_col", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
   parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname_all_pvals", help="Name of output file")
-  parser.add_argument("--outname_svd_pvals", help="Name of output File")
+  parser.add_argument("--outname_perm_pvals", help="Name of output File")
   args = parser.parse_args()
   return args
 
@@ -162,6 +162,6 @@ def main():
     frac_dict = pd.Series(df["f" + str(i)].values,index=df.gene).to_dict()
     new_out_df["f" + str(i)] = new_out_df["gene"].map(frac_dict)
 
-  new_out_df.to_csv(args.outname_svd_pvals, sep="\t", index=False)
+  new_out_df.to_csv(args.outname_perm_pvals, sep="\t", index=False)
 
 main()

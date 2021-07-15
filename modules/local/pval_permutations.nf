@@ -1,7 +1,7 @@
 process PVAL_PERMUTATIONS {
     tag "${dataname}"
 
-    publishDir "${params.outdir}/SpliZ_sites",  mode: "copy", pattern: "*.tsv"
+    publishDir "${params.outdir}/variance_adjusted_permutations",  mode: "copy", pattern: "*.tsv"
 
     input:
     val svd
@@ -11,7 +11,7 @@ process PVAL_PERMUTATIONS {
 
     output:
     path outname_all_pvals,     emit: all_pvals
-    path outname_svd_pvals,     emit: svd_pvals
+    path outname_perm_pvals,    emit: perm_pvals
 
     script:
     dataname            = svd[0]
@@ -19,7 +19,7 @@ process PVAL_PERMUTATIONS {
     svd_pq              = svd[2]
 
     outname_all_pvals   = "${dataname}_outdf_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
-    outname_svd_pvals   = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_perm_pvals   = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
 
     """
     variance_adjusted_permutations_bytiss.py \\
@@ -28,6 +28,6 @@ process PVAL_PERMUTATIONS {
         --group_col ${group_col} \\
         --sub_col ${sub_col} \\
         --outname_all_pvals ${outname_all_pvals} \\
-        --outname_svd_pvals ${outname_svd_pvals} \\
+        --outname_perm_pvals ${outname_perm_pvals} \\
     """
 } 

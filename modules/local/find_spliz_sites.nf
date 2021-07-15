@@ -1,18 +1,30 @@
 process FIND_SPLIZ_SITES {
-    tag "${dataname}"
+    tag "${params.dataname}"
 
-    publishDir "${params.outdir}/SpliZ_sites",  mode: "copy", pattern: "*.txt"
+    publishDir "${params.outdir}/SpliZ_sites",  mode: "copy", pattern: "*.tsv"
 
     input:
     path ch_geneMats
     path svd_pvals
 
     output:
-    path "tester.txt"
+    path first_evec     , emit: first_evec
+    path second_evec    , emit: second_evec
+    path third_evec     , emit: third_evec
 
     script:
+    param_stem      = svd_pvals.baseName
+
+    first_evec      = "first_evec_${param_stem}.tsv"
+    second_evec     = "second_evec_${param_stem}.tsv"
+    third_evec      = "third_evec_${param_stem}.tsv"
+
     """
-    tester.R
+    find_SpliZ_sites.R \\
+        ${svd_pvals} \\
+        ${first_evec} \\
+        ${second_evec} \\
+        ${third_evec} \\
     """
 
 }
