@@ -1,4 +1,4 @@
-process CONVERT {
+process CONVERT_PARQUET {
     tag "${dataname}"
 
     input:

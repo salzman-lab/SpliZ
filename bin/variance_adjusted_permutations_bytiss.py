@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+
 import argparse
 import numpy as np
-import os
 import pandas as pd
 from scipy import stats
 from tqdm import tqdm
@@ -9,16 +10,11 @@ from statsmodels.stats.multitest import multipletests
 def get_args():
   parser = argparse.ArgumentParser(description="calculate p values based on Romano method")
   parser.add_argument("--input", help="Name of the input file from svd_zscore")
-
-  parser.add_argument("--dataname",help="name of dataset to use")
-  parser.add_argument("--suffix",help="suffix to save with")
-  parser.add_argument("--group_col",help="column to group the data by (e.g. ontology, compartment, tissue)",default="ontology")
-  parser.add_argument("--sub_col",help="subset data by this column before checking for differences (e.g. tissue, compartment)",default="dummy")
-
-
-  parser.add_argument("--num_perms",type=int,help="number of permutations to run for")
-
-  parser.add_argument("--temp",action="store_true",help="use temp rijk file")
+  parser.add_argument("--num_perms", type=int,help="number of permutations to run for")
+  parser.add_argument("--group_col", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
+  parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
+  parser.add_argument("--outname_all_pvals", help="Name of output file")
+  parser.add_argument("--outname_svd_pvals", help="Name of output File")
   args = parser.parse_args()
   return args
 
@@ -64,18 +60,18 @@ def main():
 
   df = pd.read_parquet(
       args.input,
-      columns=["geneR1A_uniq", args.group_col, "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+      columns=["gene", args.group_col, "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
   )
   df = df.drop_duplicates("cell_gene")
   df["tiss_comp"] = df["tissue"] + df["compartment"]
 
   # subset to ontologies with > 20 cells
-  df["ontology_gene"] = df[args.group_col] + df["geneR1A_uniq"]
+  df["ontology_gene"] = df[args.group_col] + df["gene"]
   df["num_ont_gene"] = df["ontology_gene"].map(df.groupby("ontology_gene")["cell_gene"].nunique())
   df = df[df["num_ont_gene"] > 10]
 
   z_cols = ["scZ","svd_z0","svd_z1","svd_z2"]
-  out = {"pval" : [], "geneR1A_uniq" : [], "num_onts" : [],"z_col" : [],"max_abs_median" : [], "Tn1" : [], "sub_col" : []}
+  out = {"pval" : [], "gene" : [], "num_onts" : [],"z_col" : [],"max_abs_median" : [], "Tn1" : [], "sub_col" : []}
   
   var_adj = 0.1
   adj_var = True
@@ -87,7 +83,7 @@ def main():
   
   df["dummy"] = "null"
   for tiss, tiss_df in df.groupby(args.sub_col):
-    for gene, sub_df in tqdm(tiss_df.groupby("geneR1A_uniq")):
+    for gene, sub_df in tqdm(tiss_df.groupby("gene")):
       
       for z_col in z_cols:
     
@@ -100,7 +96,7 @@ def main():
           out["pval"].append(pval)
           out["Tn1"].append(Tn1)
   
-          out["geneR1A_uniq"].append(gene)
+          out["gene"].append(gene)
           out["num_onts"].append(var_df.shape[0])
           out["z_col"].append(z_col)
           out["max_abs_median"].append((var_df["ont_median"].abs()).max())
@@ -131,19 +127,19 @@ def main():
   out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
   out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
 
-  out_df.to_csv("{}{}_outdf_{}-{}_{}{}.tsv".format(outpath,args.dataname,args.group_col, args.sub_col,args.num_perms,args.suffix),sep="\t",index=False)
+  out_df.to_csv(args.outname_all_pvals, sep="\t", index=False)
 
-  out_df["gene_sub_col"] = out_df["geneR1A_uniq"] + out_df["sub_col"]
+  out_df["gene_sub_col"] = out_df["gene"] + out_df["sub_col"]
 
   # reformat output
-  new_out = {"geneR1A_uniq" : [], "num_onts" : [], "sub_col" : []}
+  new_out = {"gene" : [], "num_onts" : [], "sub_col" : []}
   for z_col in z_cols:
     new_out["chi2_pval_adj_" + z_col] = []
     new_out["perm_pval_adj_" + z_col] = []
     new_out["max_abs_median_" + z_col] = []
     new_out["perm_cdf_" + z_col] = []
   for gene_sub, gene_df in out_df.groupby("gene_sub_col"):
-    new_out["geneR1A_uniq"].append(gene_df["geneR1A_uniq"].iloc[0])
+    new_out["gene"].append(gene_df["gene"].iloc[0])
     new_out["sub_col"].append(gene_df["sub_col"].iloc[0])
     new_out["num_onts"].append(gene_df["num_onts"].iloc[0])
     temp_z_cols = []
@@ -161,11 +157,11 @@ def main():
   new_out_df = pd.DataFrame.from_dict(new_out).sort_values("perm_pval_adj_scZ")
 
   # add frac from SVD for each gene
-  df = df.drop_duplicates("geneR1A_uniq")
+  df = df.drop_duplicates("gene")
   for i in range(3):
-    frac_dict = pd.Series(df["f" + str(i)].values,index=df.geneR1A_uniq).to_dict()
-    new_out_df["f" + str(i)] = new_out_df["geneR1A_uniq"].map(frac_dict)
+    frac_dict = pd.Series(df["f" + str(i)].values,index=df.gene).to_dict()
+    new_out_df["f" + str(i)] = new_out_df["gene"].map(frac_dict)
 
-  new_out_df.to_csv("{}{}_pvals_{}-{}_{}{}.tsv".format(outpath,args.dataname,args.group_col, args.sub_col,args.num_perms,args.suffix),sep="\t",index=False)
+  new_out_df.to_csv(args.outname_svd_pvals, sep="\t", index=False)
 
 main()

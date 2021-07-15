@@ -11,14 +11,15 @@ warnings.filterwarnings("ignore")
 
 def get_args():
   parser = argparse.ArgumentParser(description="calculate splicing scores per gene/cell")
-  parser.add_argument("--dataname", help="name of dataset to use")
   parser.add_argument("--parquet", help="input parquet file")
   parser.add_argument("--pinning_S", type=float, help="pinning level for S_ijks")
   parser.add_argument("--pinning_z", type=float, help="pinning level for zs")
   parser.add_argument("--lower_bound", type=int, help="only include cell/gene pairs the have more than this many junctional reads for the gene")
   parser.add_argument("--isLight", help="if included, don't calculate extra columns (saves time)")
   parser.add_argument("--isSICILIAN", help="Is SICILIAN input file")
-  parser.add_argument("--outname", type=str, help="Name of the output file")
+  parser.add_argument("--outname_pq", help="Name of output file")
+  parser.add_argument("--outname_tsv", help="Name of output file")  
+  parser.add_argument("--outname_log", help="Name of log file")
   args = parser.parse_args()
   return args
 
@@ -110,12 +111,8 @@ def main():
   light = bool(args.isLight)
   SICILIAN = bool(args.isSICILIAN)
 
-  outname_log = "{}.log".format(args.outname)
-  outname_tsv = "{}.tsv".format(args.outname)
-  outname_pq = "{}.pq".format(args.outname)
-
   logging.basicConfig(
-    filename = outname_log,
+    filename = args.outname_log,
     format='%(asctime)s %(levelname)-8s %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')  
@@ -369,8 +366,8 @@ def main():
 
   sub_cols = ["cell", "gene", "tissue", "compartment", "free_annotation", "ontology", "scZ", "n.g_Start", "n.g_End"] 
 
-  df.drop_duplicates("cell_gene")[sub_cols].to_csv(outname_tsv, index=False, sep="\t")
-  df.to_parquet(outname_pq)
+  df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
+  df.to_parquet(args.outname_pq)
 
   logging.info("Wrote files")
 

@@ -11,17 +11,14 @@ import warnings
 def get_args():
   parser = argparse.ArgumentParser(description="calculate splicing scores per gene/cell")
   parser.add_argument("--input", help="Name of the input file from rijk_zscore")
-  parser.add_argument("--dataname", help="name of dataset to use")
-  parser.add_argument("--param_stem", help="Parameter string for the output file")
   parser.add_argument("--svd_type", choices=["normgene","normdonor"], help="Method of calculating matrix before SVD")
+  parser.add_argument("--outname_pq", help="Name of output file")
+  parser.add_argument("--outname_tsv", help="Name of output File")
   args = parser.parse_args()
   return args
 
 def main():
   args = get_args()
-
-  outname_pq = "{}_sym_SVD_{}_{}.pq".format(args.dataname, args.svd_type, args.param_stem)
-  outname_tsv = "{}_sym_SVD_{}_{}.tsv".format(args.dataname, args.svd_type, args.param_stem)
 
   df = pd.read_parquet(args.input)
 
@@ -88,7 +85,8 @@ def main():
   
       # save loadings
       v_out = pd.DataFrame(vh,columns=gene_mat.columns)
-      gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
+      #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
+      gene_mat_name = "{}.geneMat".format(gene)
       v_out.to_csv(gene_mat_name, index=False, sep = "\t")
       
   for i in range(k):
@@ -101,7 +99,7 @@ def main():
   if "ontology" in df.columns:
     sub_cols = sub_cols + ["tissue","compartment","free_annotation","ontology"]
     
-  df.to_parquet(outname_pq)
-  df.to_csv(outname_tsv, index=False, sep="\t")
+  df.to_parquet(args.outname_pq)
+  df.to_csv(args.outname_tsv, index=False, sep="\t")
 
 main()

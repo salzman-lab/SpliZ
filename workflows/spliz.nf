@@ -18,17 +18,19 @@ if (input_file.extension == "tsv") {
     exit 1, "Incorrect input file type supplied, accepted input formats are *.tsv and *.pq."
 }
 
+// Initialise input channel
 ch_input = Channel.fromPath(params.input_file)
-
 
 /*
 ========================================================================================
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { CONVERT       } from '../modules/local/convert' 
-include { SVD           } from '../subworkflows/local/svd'
-//include { SPLIZ_SITES   } from '../subworkflows/local/spliz_sites'
+include { CONVERT_PARQUET       }   from   '../modules/local/convert_parquet' 
+include { CALC_RIJK_ZSCORE      }   from   '../modules/local/calc_rijk_zscore'
+include { CALC_SPLIZVD          }   from   '../modules/local/calc_splizvd'
+include { PVAL_PERMUTATIONS     }   from   '../modules/local/pval_permutations'
+include { FIND_SPLIZ_SITES      }   from   '../modules/local/find_spliz_sites'
 
 /*
 ========================================================================================
@@ -36,31 +38,40 @@ include { SVD           } from '../subworkflows/local/svd'
 ========================================================================================
 */
 workflow SPLIZ {
-    // If necessary, convert tsv to parquet.
-    // Initialize input channel
+    // Step 0: Initialize input channel
+    ch_pq = ch_input
     if (convert_to_pq) {
-        CONVERT(
+        CONVERT_PARQUET (
             ch_input,
             params.dataname
         )
         ch_pq = CONVERT.out.pq
-    } else {
-        ch_pq = ch_input
-    }
+    } 
 
-    // Step 1: SVD calculation
-    SVD (
+    // Step 1: Calculate RIJK zscore
+    CALC_RIJK_ZSCORE (
         params.dataname,
         ch_pq,
         params.pin_S,
-        params.pin_z, 
+        params.pin_z,
         params.bounds,
         params.light,
-        params.SICILIAN,
-        params.svd_type,
+        params.SICILIAN
+    )
+ 
+     // Step 2: Calculate SVD zscore
+    CALC_SPLIZVD (
+        RIJK_ZSCORE.out.pq,
+        params.svd_type      
     )
 
-
+    // Step 3: Calculate variance adjusted permutations
+    PVAL_PERMUTATIONS (
+        SVD_ZSCORE.out.pq,
+        params.n_perms,
+        params.group_col,
+        params.sub_col
+    )
 }
 
 /*
