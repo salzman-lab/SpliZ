@@ -31,7 +31,7 @@ include { CALC_RIJK_ZSCORE      }   from   '../modules/local/calc_rijk_zscore'
 include { CALC_SPLIZVD          }   from   '../modules/local/calc_splizvd'
 include { PVAL_PERMUTATIONS     }   from   '../modules/local/pval_permutations'
 include { FIND_SPLIZ_SITES      }   from   '../modules/local/find_spliz_sites'
-include { SUMMARIZE             }   from   '../modules/local/summarize'
+include { SUMMARIZE_RESULTS     }   from   '../modules/local/summarize_results'
 
 /*
 ========================================================================================
@@ -39,8 +39,10 @@ include { SUMMARIZE             }   from   '../modules/local/summarize'
 ========================================================================================
 */
 workflow SPLIZ {
-    // Step 0: Initialize input channel
+    // Step 0a: Initialize input channel
     ch_pq = ch_input
+
+    // Step 0b: If input is tsv, convert to parquet
     if (convert_to_pq) {
         CONVERT_PARQUET (
             ch_input,
@@ -84,7 +86,7 @@ workflow SPLIZ {
     )
 
     // Step 5: Summarize results
-    SUMMARIZE (
+    SUMMARIZE_RESULTS (
         ch_pval_permutations,
         FIND_SPLIZ_SITES.out.first_evec,
         FIND_SPLIZ_SITES.out.second_evec,

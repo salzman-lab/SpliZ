@@ -1,12 +1,12 @@
 #!/usr/bin/env python
   
 import argparse
-import datetime 
 import numpy as np
 import pandas as pd
 from scipy import linalg
 from tqdm import tqdm
-import warnings
+import os
+import logging
 
 def get_args():
   parser = argparse.ArgumentParser(description="calculate splicing scores per gene/cell")
@@ -14,15 +14,28 @@ def get_args():
   parser.add_argument("--svd_type", choices=["normgene","normdonor"], help="Method of calculating matrix before SVD")
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output File")
+  parser.add_argument("--outname_log", help="Name of output File")
   args = parser.parse_args()
   return args
 
 def main():
   args = get_args()
 
+  logging.basicConfig(
+    filename = args.outname_log,
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S') 
+
+  logging.info("Beginning calculation")
+  logging.info("Read in parquet file")
+
   df = pd.read_parquet(args.input)
 
   ##### PERFORM SVD ZSCORE CALCULATION #####
+
+  logging.info("Perform SVD zscore calculation")
+
   letters = ["Start", "End"]
 
   if args.svd_type == "normgene":
@@ -55,6 +68,7 @@ def main():
   loads = {"f{}".format(i) : {} for i in range(k)}
   zs = {"svd_z{}".format(i) : {} for i in range(k)}
   
+  logging.info("Iterate over each gene")
   for gene, gene_df in tqdm(df.groupby("gene")):
     
     # get zcontrib matrix
@@ -98,8 +112,16 @@ def main():
   sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] #+ velocity_cols
   if "ontology" in df.columns:
     sub_cols = sub_cols + ["tissue","compartment","free_annotation","ontology"]
-    
+  
+  logging.info("Write out files")
+
   df.to_parquet(args.outname_pq)
   df.to_csv(args.outname_tsv, index=False, sep="\t")
 
-main()
+  logging.info("Completed")
+
+try:
+    exit(main())
+except Exception:
+    logging.exception("Exception in main(): ")
+    exit(1)

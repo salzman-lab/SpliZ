@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import argparse
 import numpy as np
 import pandas as pd
@@ -373,4 +374,8 @@ def main():
 
   logging.info("Completed")
 
-main()
+try:
+    exit(main())
+except Exception:
+    logging.exception("Exception in main(): ")
+    exit(1)

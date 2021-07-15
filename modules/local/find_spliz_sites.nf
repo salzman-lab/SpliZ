@@ -5,7 +5,7 @@ process FIND_SPLIZ_SITES {
 
     input:
     path ch_geneMats
-    path svd_pvals
+    path perm_pvals
 
     output:
     path first_evec     , emit: first_evec
@@ -13,7 +13,7 @@ process FIND_SPLIZ_SITES {
     path third_evec     , emit: third_evec
 
     script:
-    param_stem      = svd_pvals.baseName
+    param_stem      = perm_pvals.baseName
 
     first_evec      = "first_evec_${param_stem}.tsv"
     second_evec     = "second_evec_${param_stem}.tsv"
@@ -21,7 +21,7 @@ process FIND_SPLIZ_SITES {
 
     """
     find_SpliZ_sites.R \\
-        ${svd_pvals} \\
+        ${perm_pvals} \\
         ${first_evec} \\
         ${second_evec} \\
         ${third_evec} \\

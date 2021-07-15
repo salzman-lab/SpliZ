@@ -19,17 +19,17 @@ process CALC_RIJK_ZSCORE {
     path "*.log"                                        , emit: log                                    
 
     script:
-    def suff_light      = light     ? "light" : ""
-    def suff_SICILIAN   = SICILIAN  ? "SICILIAN" : ""
+    def suff_light      = light     ? "_light" : ""
+    def suff_SICILIAN   = SICILIAN  ? "_SICILIAN" : ""
     
     def isLight         = light     ? "0" : "1"
     def isSICILIAN      = SICILIAN  ? "0" : "1"
 
-    param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}_${suff_light}_${suff_SICILIAN}"
+    param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}${suff_light}${suff_SICILIAN}"
 
     outname_pq          = "${dataname}_sym_${param_stem}.pq"
     outname_tsv         = "${dataname}_sym_${param_stem}.tsv"
-    outname_log         = "${dataname}_${param_stem}.calc_rijk_zscore.log"
+    outname_log         = "calc_rijk_zscore.log"
     
     """
     rijk_zscore.py \\

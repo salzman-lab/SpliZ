@@ -11,19 +11,74 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
+                "dataname",
                 "input_file",
-                "SICILIAN"
+                "SICILIAN",
+                "pin_S",
+                "bounds",
+                "light",
+                "svd_type",
+                "sub_col",
+                "group_col",
+                "n_perms"
             ],
             "properties": {
+                "dataname": {
+                    "type": "string",
+                    "description": "Name identifier of the SpliZ run"
+                },
                 "input_file": {
                     "type": "string",
                     "fa_icon": "fas fa-dna",
-                    "description": "Input parquet or tsv file",
-                    "help_text": "Use this to specify the location of your input FastQ files. For example:\n\n```bash\n--input 'path/to/data/sample_*_{1,2}.fastq'\n```\n\nPlease note the following requirements:\n\n1. The path must be enclosed in quotes\n2. The path must have at least one `*` wildcard character\n3. When using the pipeline with paired end data, the path must use `{1,2}` notation to specify read pairs.\n\nIf left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`"
+                    "description": "Input parquet or tsv file"
+                },
+                "outdir": {
+                    "type": "string",
+                    "description": "Output directory for results",
+                    "default": "./results/${dataname}"
                 },
                 "SICILIAN": {
                     "type": "boolean",
                     "description": "Is the input file SICILIAN output?"
+                },
+                "pin_S": {
+                    "type": "number",
+                    "description": "Bound splice site residuals at this quantile (e.g. values in the lower pin_S quantile and the upper 1 - pin_S quantile will be rounded to the quantile limits)",
+                    "default": 0.1
+                },
+                "pin_z": {
+                    "type": "number",
+                    "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)"
+                },
+                "bounds": {
+                    "type": "integer",
+                    "description": "Only include cell/gene pairs that have more than this many junctional reads for the gene",
+                    "default": 5
+                },
+                "light": {
+                    "type": "boolean",
+                    "description": "Output the minimum number of columns",
+                    "default": true
+                },
+                "svd_type": {
+                    "type": "string",
+                    "description": "Type of SVD calculation",
+                    "default": "normdonor"
+                },
+                "sub_col": {
+                    "type": "string",
+                    "description": "Column to partition data by",
+                    "default": "dummy"
+                },
+                "group_col": {
+                    "type": "string",
+                    "description": "Column to group data by",
+                    "default": "ontology"
+                },
+                "n_perms": {
+                    "type": "integer",
+                    "description": "Number of permutations",
+                    "default": 100
                 }
             }
         },
@@ -201,13 +256,6 @@
             "default": "${params.outdir}/pipeline_info",
             "fa_icon": "fas fa-cogs",
             "hidden": true
-        },
-        "show_hidden_params": {
-            "type": "boolean",
-            "fa_icon": "far fa-eye-slash",
-            "description": "Show all params when using `--help`",
-            "hidden": true,
-            "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
         }
     }
 }

@@ -4,7 +4,7 @@ process PVAL_PERMUTATIONS {
     publishDir "${params.outdir}/variance_adjusted_permutations",  mode: "copy", pattern: "*.tsv"
 
     input:
-    val svd
+    val splizvd
     val n_perms
     val group_col
     val sub_col
@@ -14,16 +14,16 @@ process PVAL_PERMUTATIONS {
     path outname_perm_pvals,    emit: perm_pvals
 
     script:
-    dataname            = svd[0]
-    param_stem          = svd[1]
-    svd_pq              = svd[2]
+    dataname            = splizvd[0]
+    param_stem          = splizvd[1]
+    splizvd_pq          = splizvd[2]
 
     outname_all_pvals   = "${dataname}_outdf_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
-    outname_perm_pvals   = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_perm_pvals  = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
 
     """
     variance_adjusted_permutations_bytiss.py \\
-        --input ${svd_pq} \\
+        --input ${splizvd_pq} \\
         --num_perms ${n_perms} \\
         --group_col ${group_col} \\
         --sub_col ${sub_col} \\

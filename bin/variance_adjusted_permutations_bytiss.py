@@ -58,9 +58,14 @@ def main():
 
   args = get_args()
 
+  df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+
+  if args.sub_col.lower() != "dummy" and args.group_col not in df_cols:
+    df_cols.append(args.group_col)    
+
   df = pd.read_parquet(
       args.input,
-      columns=["gene", args.group_col, "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+      columns=df_cols
   )
   df = df.drop_duplicates("cell_gene")
   df["tiss_comp"] = df["tissue"] + df["compartment"]
