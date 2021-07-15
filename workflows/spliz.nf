@@ -12,10 +12,16 @@ if (input_file.extension == "tsv") {
 } else if (input_file.extension == "pq") {
     convert_to_pq = false
     if (!params.SICILIAN) {
-        exit 1, "Incorrect input file type supplied, parquet file must be SICILIAN output."
+        exit 1, "Invalid input file type supplied, parquet file must be SICILIAN output."
     }
 } else {
-    exit 1, "Incorrect input file type supplied, accepted input formats are *.tsv and *.pq."
+    exit 1, "Invalid input file type supplied, accepted input formats are *.tsv and *.pq."
+}
+
+// Validate svd_type param
+def is_valid_svd_type = params.svd_type in ["normgene", "normdonor"]
+if (!is_valid_svd_type) {
+    exit 1, "Invalid svd_type; options are 'normgene' and 'normdonor'."
 }
 
 // Initialise input channel
@@ -42,7 +48,9 @@ workflow SPLIZ {
     // Step 0a: Initialize input channel
     ch_pq = ch_input
 
-    // Step 0b: If input is tsv, convert to parquet
+    // Step 0b: If input file is not SICILIAN output, preprocess 
+
+    // Step 0c: If input is tsv, convert to parquet
     if (convert_to_pq) {
         CONVERT_PARQUET (
             ch_input,

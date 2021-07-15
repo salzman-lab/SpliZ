@@ -5,7 +5,7 @@
 ========================================================================================
  nf-core/spliz Analysis Pipeline.
  #### Homepage / Documentation
- https://github.com/nf-core/spliz
+https://github.com/salzmanlab/SpliZ
 ----------------------------------------------------------------------------------------
 */
 nextflow.enable.dsl=2
@@ -17,7 +17,7 @@ log.info Headers.nf_core(workflow, params.monochrome_logs)
 ////////////////////////////////////////////////////+
 def json_schema = "$projectDir/nextflow_schema.json"
 if (params.help) {
-    def command = "nextflow run nf-core/spliz --input '*_R{1,2}.fastq.gz' -profile docker"
+    def command = "nextflow run nf-core/spliz -c conf/test.config"
     log.info NfcoreSchema.params_help(workflow, params, json_schema, command)
     exit 0
 }
@@ -77,9 +77,9 @@ def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = workflow.runName
 // TODO nf-core: Report custom parameters here
-summary['Input']            = params.input
-summary['Fasta Ref']        = params.fasta
-summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
+//summary['Input']            = params.input
+//summary['Fasta Ref']        = params.fasta
+//summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -275,6 +275,7 @@ workflow.onComplete {
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
+    /*
     // TODO nf-core: If not using MultiQC, strip out this code (including params.max_multiqc_email_size)
     // On success try attach the multiqc report
     def mqc_report = null
@@ -289,6 +290,7 @@ workflow.onComplete {
     } catch (all) {
         log.warn "[nf-core/spliz] Could not attach MultiQC report to summary email"
     }
+    */
 
     // Check if we are only sending emails on failure
     email_address = params.email
@@ -354,6 +356,7 @@ workflow.onComplete {
 
     if (workflow.success) {
         log.info "-${c_purple}[nf-core/spliz]${c_green} Pipeline completed successfully${c_reset}-"
+        log.info "Results can be found in ${params.outdir}."
     } else {
         checkHostname()
         log.info "-${c_purple}[nf-core/spliz]${c_red} Pipeline completed with errors${c_reset}-"
@@ -367,10 +370,10 @@ workflow.onError {
 }
 
 def checkHostname() {
-    def c_reset = params.monochrome_logs ? '' : "\033[0m"
-    def c_white = params.monochrome_logs ? '' : "\033[0;37m"
-    def c_red = params.monochrome_logs ? '' : "\033[1;91m"
-    def c_yellow_bold = params.monochrome_logs ? '' : "\033[1;93m"
+    def c_reset         = params.monochrome_logs ? '' : "\033[0m"
+    def c_white         = params.monochrome_logs ? '' : "\033[0;37m"
+    def c_red           = params.monochrome_logs ? '' : "\033[1;91m"
+    def c_yellow_bold   = params.monochrome_logs ? '' : "\033[1;93m"
     if (params.hostnames) {
         def hostname = 'hostname'.execute().text.trim()
         params.hostnames.each { prof, hnames ->

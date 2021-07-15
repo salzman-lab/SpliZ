@@ -12,15 +12,7 @@
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
                 "dataname",
-                "input_file",
-                "SICILIAN",
-                "pin_S",
-                "bounds",
-                "light",
-                "svd_type",
-                "sub_col",
-                "group_col",
-                "n_perms"
+                "input_file"
             ],
             "properties": {
                 "dataname": {
@@ -35,7 +27,8 @@
                 "outdir": {
                     "type": "string",
                     "description": "Output directory for results",
-                    "default": "./results/${dataname}"
+                    "default": "./results/${dataname}",
+                    "hidden": true
                 },
                 "SICILIAN": {
                     "type": "boolean",
@@ -48,7 +41,8 @@
                 },
                 "pin_z": {
                     "type": "number",
-                    "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)"
+                    "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)",
+                    "default": 0.0
                 },
                 "bounds": {
                     "type": "integer",
@@ -256,6 +250,22 @@
             "default": "${params.outdir}/pipeline_info",
             "fa_icon": "fas fa-cogs",
             "hidden": true
+        },
+        "email": {
+            "type": "string"
+        },
+        "igenomes_base": {
+            "type": "string",
+            "default": "s3://ngi-igenomes/igenomes"
+        },
+        "igenomes_ignore": {
+            "type": "string"
+        },
+        "show_hidden_params": {
+            "type": "string"
+        },
+        "fasta": {
+            "type": "string"
         }
     }
 }

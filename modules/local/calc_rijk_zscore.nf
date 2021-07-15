@@ -1,8 +1,8 @@
 process CALC_RIJK_ZSCORE {
     tag "${dataname}"
 
-    publishDir "${params.outdir}/SpliZ_values"       , mode: 'copy', pattern: '*.tsv'
-    publishDir "${params.outdir}/logs"  , mode: 'copy', pattern: '*.log'
+    publishDir "${params.outdir}/SpliZ_values"  , mode: 'copy', pattern: '*.tsv'
+    publishDir "${params.outdir}/logs"          , mode: 'copy', pattern: '*.log'
 
     input:
     val dataname
@@ -28,7 +28,7 @@ process CALC_RIJK_ZSCORE {
     param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}${suff_light}${suff_SICILIAN}"
 
     outname_pq          = "${dataname}_sym_${param_stem}.pq"
-    outname_tsv         = "${dataname}_sym_${param_stem}.tsv"
+    outname_tsv         = "${dataname}_sym_${param_stem}_subcol.tsv"
     outname_log         = "calc_rijk_zscore.log"
     
     """

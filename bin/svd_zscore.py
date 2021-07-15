@@ -115,8 +115,8 @@ def main():
   
   logging.info("Write out files")
 
+  df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
   df.to_parquet(args.outname_pq)
-  df.to_csv(args.outname_tsv, index=False, sep="\t")
 
   logging.info("Completed")
 
