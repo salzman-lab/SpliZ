@@ -98,10 +98,11 @@ def normalize_Sijks(df,let):
   return df
 
 def contains_required_cols(df, required_cols):
-
+  
   # Function to check if the input file contains the required columns for processing
-  df_cols = list(df.columns)
-  if set(required_cols) == set(df_cols):
+  set_req = set(required_cols)
+  set_df = set(list(df.columns))
+  if set_df.issuperset(set_req):
     return True
   else:
     return False
