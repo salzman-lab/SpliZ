@@ -4,6 +4,9 @@ process CALC_SPLIZVD {
     publishDir "${params.outdir}/SpliZ_values",  
         mode: "copy", 
         pattern: "*.tsv"
+    publishDir "${params.outdir}/SpliZ_values",  
+        mode: "copy", 
+        pattern: "*.pq"
     publishDir "${params.outdir}/logs", 
         mode: 'copy', 
         pattern: '*.log'
