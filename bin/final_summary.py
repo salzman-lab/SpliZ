@@ -14,6 +14,7 @@ def get_args():
   parser.add_argument("--group_col", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
   parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname", help="Name of output file")
+  parser.add_argument("--outname_log", help="Name of log file")
 
   args = parser.parse_args()
   return args
@@ -21,6 +22,15 @@ def get_args():
 
 def main():
   args = get_args()
+
+  logging.basicConfig(
+    filename = args.outname_log,
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
+
+  logging.info("Starting")
+
   # load in data
   pval_df = pd.read_csv(args.perm_pvals, sep = "\t")
   
@@ -64,5 +74,7 @@ def main():
   out_df = pd.DataFrame.from_dict(out_dict)
   out_df = out_df.sort_values(["gene","sub_col","scZ_median"])
   out_df.to_csv(args.outname, sep="\t", index=False)
+
+  logging.info("Completed")
 
 main()

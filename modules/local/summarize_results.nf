@@ -4,6 +4,9 @@ process SUMMARIZE_RESULTS {
     publishDir "${params.outdir}",  
         mode: "copy", 
         pattern: "*.tsv"
+    publishDir "${params.outdir}/logs", 
+        mode: 'copy', 
+        pattern: '*.log'
 
     input:
     path perm_pvals
@@ -15,14 +18,16 @@ process SUMMARIZE_RESULTS {
     val sub_col
 
     output:
-    path outname, emit: summary
+    path outname        , emit: summary
+    path outname_log    , emit: log
 
     script:
     dataname            = splizvd[0]
     param_stem          = splizvd[1]
     splizvd_tsv         = splizvd[2]
 
-    outname = "summary_${dataname}_${group_col}-${sub_col}_${param_stem}.tsv"
+    outname             = "summary_${dataname}_${group_col}-${sub_col}_${param_stem}.tsv"
+    outname_log         = "summarize_results.log"
 
     """
     final_summary.py \\
@@ -34,5 +39,6 @@ process SUMMARIZE_RESULTS {
         --group_col ${group_col} \\
         --sub_col ${sub_col} \\
         --outname ${outname} \\
+        --outname_log ${outname_log}
     """
 }

@@ -15,6 +15,7 @@ def get_args():
   parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname_all_pvals", help="Name of output file")
   parser.add_argument("--outname_perm_pvals", help="Name of output File")
+  parser.add_argument("--outname_log", help="Name of log File")
   args = parser.parse_args()
   return args
 
@@ -58,10 +59,23 @@ def main():
 
   args = get_args()
 
-  df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+  logging.basicConfig(
+    filename = args.outname_log,
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')  
+
+  logging.info("Starting")
+
+  #df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
+  df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2"]
 
   if args.sub_col.lower() != "dummy" and args.group_col not in df_cols:
-    df_cols.append(args.group_col)    
+    df_cols.append(args.group_col)  
+    df_cols.append(args.group_col)
+
+  if args.sub_col.lower == "dummy":
+    df_cols.append(args.group_col)
 
   df = pd.read_parquet(
       args.input,
@@ -168,5 +182,7 @@ def main():
     new_out_df["f" + str(i)] = new_out_df["gene"].map(frac_dict)
 
   new_out_df.to_csv(args.outname_perm_pvals, sep="\t", index=False)
+  
+  logging.info("Completed")
 
 main()

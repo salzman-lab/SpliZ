@@ -4,6 +4,9 @@ process PVAL_PERMUTATIONS {
     publishDir "${params.outdir}/variance_adjusted_permutations",  
         mode: "copy", 
         pattern: "*.tsv"
+    publishDir "${params.outdir}/logs", 
+        mode: 'copy', 
+        pattern: '*.log'
 
     input:
     val splizvd
@@ -14,14 +17,16 @@ process PVAL_PERMUTATIONS {
     output:
     path outname_all_pvals,     emit: all_pvals
     path outname_perm_pvals,    emit: perm_pvals
+    path outname_log            emit: log
 
     script:
-    dataname            = splizvd[0]
-    param_stem          = splizvd[1]
-    splizvd_pq          = splizvd[2]
+    dataname                    = splizvd[0]
+    param_stem                  = splizvd[1]
+    splizvd_pq                  = splizvd[2]
 
-    outname_all_pvals   = "${dataname}_outdf_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
-    outname_perm_pvals  = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_all_pvals           = "${dataname}_outdf_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_perm_pvals          = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_log                 = "pval_permutations.log"
 
     """
     variance_adjusted_permutations_bytiss.py \\
@@ -31,5 +36,6 @@ process PVAL_PERMUTATIONS {
         --sub_col ${sub_col} \\
         --outname_all_pvals ${outname_all_pvals} \\
         --outname_perm_pvals ${outname_perm_pvals} \\
+        --outname_log ${outname_log}
     """
 } 
