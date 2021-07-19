@@ -12,6 +12,8 @@ def get_args():
   parser = argparse.ArgumentParser(description="calculate splicing scores per gene/cell")
   parser.add_argument("--input", help="Name of the input file from rijk_zscore")
   parser.add_argument("--svd_type", choices=["normgene","normdonor"], help="Method of calculating matrix before SVD")
+  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
+  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output File")
   parser.add_argument("--outname_log", help="Name of output File")
@@ -111,7 +113,7 @@ def main():
 
   sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] #+ velocity_cols
   if "ontology" in df.columns:
-    sub_cols = sub_cols + ["tissue","compartment","free_annotation","ontology"]
+    sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
   
   logging.info("Write out files")
 

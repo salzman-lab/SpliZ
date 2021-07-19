@@ -68,14 +68,12 @@ def main():
 
   logging.info("Starting")
 
-  #df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
   df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2"]
 
-  if args.grouping_level_1.lower() != "dummy" and args.grouping_level_2 not in df_cols:
+  if args.grouping_level_1.lower() != "dummy":
     df_cols.append(args.grouping_level_2)  
     df_cols.append(args.grouping_level_1)
-
-  if args.grouping_level_1.lower == "dummy":
+  else:
     df_cols.append(args.grouping_level_2)
 
   df = pd.read_parquet(
@@ -83,7 +81,7 @@ def main():
       columns=df_cols
   )
   df = df.drop_duplicates("cell_gene")
-  df["tiss_comp"] = df["tissue"] + df["compartment"]
+  df["tiss_comp"] = df[args.grouping_level_1] + df[args.grouping_level_2]
 
   # subset to ontologies with > 20 cells
   df["ontology_gene"] = df[args.grouping_level_2] + df["gene"]

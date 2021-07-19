@@ -43,7 +43,7 @@ def main():
   
   df = pd.read_csv(args.splizvd, sep="\t")
   if (args.grouping_level_1 == "tiss_comp") & (args.grouping_level_1 not in df.columns):
-    df["tiss_comp"] = df["tissue"] + df["compartment"]
+    df["tiss_comp"] = df[args.grouping_level_1] + df[args.grouping_level_2]
   elif args.grouping_level_1 == "dummy":
     df["dummy"] = "dummy"
 

@@ -99,20 +99,20 @@ def normalize_Sijks(df,let):
 
   return df
 
-def contains_required_cols(df, required_cols, args.grouping_level_2, args.grouping_level_1):
+def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1):
   
   # Function to check if the input file contains the required columns for processing
 
-  required_cols.append(args.grouping_level_2)
-  if args.grouping_level_1.lower() != "dummy":
-    required_cols.append(args.grouping_level_1)
+  required_cols.append(grouping_level_2)
+  if grouping_level_1.lower() != "dummy":
+    required_cols.append(grouping_level_1)
 
   set_req = set(required_cols)
   set_df = set(list(df.columns))
   if set_df.issuperset(set_req):
-    return True
+    return True, required_cols
   else:
-    return False
+    return False, required_cols
 
 def main():
   args = get_args()
@@ -137,8 +137,9 @@ def main():
 
   logging.info("Input column check")
 
-  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
-  if contains_required_cols(df, required_cols, args.grouping_level_2, args.grouping_level_1): 
+  base_required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
+  passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
+  if passes_input_check: 
     logging.info("Passed input column check")
   else:
     logging.exception("Failed input column check! Exiting")
@@ -364,7 +365,7 @@ def main():
         idx = df[(~df["z_Start_{}".format(y)].isna()) & (~df["z_End_{}".format(y)].isna())].index
         df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_Start_{}".format(y)] - df.loc[idx,"z_End_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
 
-  df["ontology"] = df["tissue"] + df["compartment"] + df["free_annotation"]
+  df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
   
   df["n.g"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df["scaled_z"] = df["z"] / np.sqrt(df["n.g"])
@@ -372,7 +373,10 @@ def main():
   for let in letters:
     df["zcontrib" + let] = df["numReads"] * df["nSijk" + let] / np.sqrt(df["n.g"])
 
-  sub_cols = ["cell", "gene", "tissue", "compartment", "free_annotation", "ontology", "scZ", "n.g_Start", "n.g_End"] 
+  sub_cols = ["cell", "gene", "ontology", "scZ", "n.g_Start", "n.g_End"]
+  sub_cols.append(args.grouping_level_2)
+  if args.grouping_level_1.lower() != "dummy":
+    sub_cols.append(grouping_level_1)
 
   df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
   df.to_parquet(args.outname_pq)

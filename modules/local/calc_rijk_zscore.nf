@@ -49,7 +49,7 @@ process CALC_RIJK_ZSCORE {
         --isLight ${isLight} \\
         --isSICILIAN ${isSICILIAN} \\
         --grouping_level_2 ${grouping_level_2} \\
-        --grouping_leve_1 ${grouping_level_1} \\
+        --grouping_level_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log} \\

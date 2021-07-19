@@ -14,6 +14,8 @@ process CALC_SPLIZVD {
     input:
     val rijk
     val svd_type
+    val grouping_level_2
+    val grouping_level_1
 
     output:
     tuple val(dataname), val(param_stem), path(outname_pq)  , emit: pq
@@ -34,6 +36,8 @@ process CALC_SPLIZVD {
     svd_zscore.py \\
         --input ${rijk_pq} \\
         --svd_type ${svd_type} \\
+        --grouping_level_2 ${grouping_level_2} \\
+        --grouping_level_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log}

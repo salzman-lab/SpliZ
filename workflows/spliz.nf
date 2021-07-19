@@ -75,7 +75,9 @@ workflow SPLIZ {
     // Step 2: Calculate SplizVD
     CALC_SPLIZVD (
         CALC_RIJK_ZSCORE.out.pq,
-        params.svd_type      
+        params.svd_type,
+        params.grouping_level_2,
+        params.grouping_level_1      
     )
     
     if (!params.calc_SpliZ_only) {
