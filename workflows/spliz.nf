@@ -70,13 +70,13 @@ workflow SPLIZ {
         params.SICILIAN
     )
     
+    // Step 2: Calculate SplizVD
+    CALC_SPLIZVD (
+        CALC_RIJK_ZSCORE.out.pq,
+        params.svd_type      
+    )
+    
     if (!params.calc_SpliZ_only) {
-        // Step 2: Calculate SplizVD
-        CALC_SPLIZVD (
-            CALC_RIJK_ZSCORE.out.pq,
-            params.svd_type      
-        )
-
         // Step 3: Calculate variance adjusted permutations
         PVAL_PERMUTATIONS (
             CALC_SPLIZVD.out.pq,
