@@ -67,7 +67,9 @@ workflow SPLIZ {
         params.pin_z,
         params.bounds,
         params.light,
-        params.SICILIAN
+        params.SICILIAN,
+        params.grouping_level_2,
+        params.grouping_level_1
     )
     
     // Step 2: Calculate SplizVD

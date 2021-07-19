@@ -18,6 +18,8 @@ def get_args():
   parser.add_argument("--lower_bound", type=int, help="only include cell/gene pairs the have more than this many junctional reads for the gene")
   parser.add_argument("--isLight", help="if included, don't calculate extra columns (saves time)")
   parser.add_argument("--isSICILIAN", help="Is SICILIAN input file")
+  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
+  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output file")  
   parser.add_argument("--outname_log", help="Name of log file")
@@ -97,9 +99,14 @@ def normalize_Sijks(df,let):
 
   return df
 
-def contains_required_cols(df, required_cols):
+def contains_required_cols(df, required_cols, args.grouping_level_2, args.grouping_level_1):
   
   # Function to check if the input file contains the required columns for processing
+
+  required_cols.append(args.grouping_level_2)
+  if args.grouping_level_1.lower() != "dummy":
+    required_cols.append(args.grouping_level_1)
+
   set_req = set(required_cols)
   set_df = set(list(df.columns))
   if set_df.issuperset(set_req):
@@ -130,8 +137,8 @@ def main():
 
   logging.info("Input column check")
 
-  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "tissue", "compartment", "free_annotation", "refName_newR1", "called", "chrR1A"]
-  if contains_required_cols(df, required_cols): 
+  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
+  if contains_required_cols(df, required_cols, args.grouping_level_2, args.grouping_level_1): 
     logging.info("Passed input column check")
   else:
     logging.exception("Failed input column check! Exiting")

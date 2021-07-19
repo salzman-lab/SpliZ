@@ -19,6 +19,8 @@ process CALC_RIJK_ZSCORE {
     val bounds 
     val light
     val SICILIAN
+    val grouping_level_2
+    val grouping_level_1
 
     output:
     tuple val(dataname), val(param_stem), path("*.pq")  , emit: pq
@@ -46,6 +48,8 @@ process CALC_RIJK_ZSCORE {
         --lower_bound ${bounds} \\
         --isLight ${isLight} \\
         --isSICILIAN ${isSICILIAN} \\
+        --grouping_level_2 ${grouping_level_2} \\
+        --grouping_leve_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log} \\
