@@ -73,7 +73,7 @@ def main():
 
   if args.sub_col.lower() != "dummy" and args.group_col not in df_cols:
     df_cols.append(args.group_col)  
-    df_cols.append(args.group_col)
+    df_cols.append(args.sub_col)
 
   if args.sub_col.lower == "dummy":
     df_cols.append(args.group_col)
