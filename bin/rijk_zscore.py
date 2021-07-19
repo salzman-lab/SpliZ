@@ -146,7 +146,7 @@ def main():
     sys.exit(1)
 
   df = df[required_cols]
-
+  df.head()
   logging.info("Rename SICILIAN columns")
 
   cols_dict = {
@@ -376,7 +376,7 @@ def main():
   sub_cols = ["cell", "gene", "ontology", "scZ", "n.g_Start", "n.g_End"]
   sub_cols.append(args.grouping_level_2)
   if args.grouping_level_1.lower() != "dummy":
-    sub_cols.append(grouping_level_1)
+    sub_cols.append(args.grouping_level_1)
 
   df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
   df.to_parquet(args.outname_pq)
