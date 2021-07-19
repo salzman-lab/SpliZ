@@ -11,8 +11,8 @@ process PVAL_PERMUTATIONS {
     input:
     val splizvd
     val n_perms
-    val group_col
-    val sub_col
+    val grouping_level_2
+    val grouping_level_1
 
     output:
     path outname_all_pvals      , emit: all_pvals
@@ -24,16 +24,16 @@ process PVAL_PERMUTATIONS {
     param_stem                  = splizvd[1]
     splizvd_pq                  = splizvd[2]
 
-    outname_all_pvals           = "${dataname}_outdf_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
-    outname_perm_pvals          = "${dataname}_pvals_${group_col}-${sub_col}_${n_perms}_${param_stem}.tsv"
+    outname_all_pvals           = "${dataname}_outdf_${grouping_level_2}-${grouping_level_1}_${n_perms}_${param_stem}.tsv"
+    outname_perm_pvals          = "${dataname}_pvals_${grouping_level_2}-${grouping_level_1}_${n_perms}_${param_stem}.tsv"
     outname_log                 = "pval_permutations.log"
 
     """
     variance_adjusted_permutations_bytiss.py \\
         --input ${splizvd_pq} \\
         --num_perms ${n_perms} \\
-        --group_col ${group_col} \\
-        --sub_col ${sub_col} \\
+        --grouping_level_2 ${grouping_level_2} \\
+        --grouping_level_1 ${grouping_level_1} \\
         --outname_all_pvals ${outname_all_pvals} \\
         --outname_perm_pvals ${outname_perm_pvals} \\
         --outname_log ${outname_log}

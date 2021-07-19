@@ -81,8 +81,8 @@ workflow SPLIZ {
         PVAL_PERMUTATIONS (
             CALC_SPLIZVD.out.pq,
             params.n_perms,
-            params.group_col,
-            params.sub_col
+            params.grouping_level_2,
+            params.grouping_level_1
         )
 
         PVAL_PERMUTATIONS.out.perm_pvals
@@ -101,8 +101,8 @@ workflow SPLIZ {
             FIND_SPLIZ_SITES.out.second_evec,
             FIND_SPLIZ_SITES.out.third_evec,
             CALC_SPLIZVD.out.tsv,
-            params.group_col,
-            params.sub_col
+            params.grouping_level_2,
+            params.grouping_level_1
         )
     }
 }

@@ -12,8 +12,8 @@ def get_args():
   parser = argparse.ArgumentParser(description="calculate p values based on Romano method")
   parser.add_argument("--input", help="Name of the input file from svd_zscore")
   parser.add_argument("--num_perms", type=int,help="number of permutations to run for")
-  parser.add_argument("--group_col", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
-  parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
+  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
+  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname_all_pvals", help="Name of output file")
   parser.add_argument("--outname_perm_pvals", help="Name of output File")
   parser.add_argument("--outname_log", help="Name of log File")
@@ -39,13 +39,13 @@ def calc_pval(var_df):
   # return the chi^2 p value and the chi^2 statistic
   return 1 - stats.chi2.cdf(sum_vals , var_df.shape[0] - 1), sum_vals
 
-def get_var_df(sub_df, z_col, adj_var, group_col):
+def get_var_df(sub_df, z_col, adj_var, grouping_level_2):
 
-  sub_df["num_cells_ont"] = sub_df[group_col].map(sub_df.groupby(group_col)["cell"].nunique())
-  sub_df["ont_median"] = sub_df[group_col].map(sub_df.groupby(group_col)[z_col].median())
-  sub_df["ont_var"] = sub_df[group_col].map(sub_df.groupby(group_col)[z_col].var())
+  sub_df["num_cells_ont"] = sub_df[grouping_level_2].map(sub_df.groupby(grouping_level_2)["cell"].nunique())
+  sub_df["ont_median"] = sub_df[grouping_level_2].map(sub_df.groupby(grouping_level_2)[z_col].median())
+  sub_df["ont_var"] = sub_df[grouping_level_2].map(sub_df.groupby(grouping_level_2)[z_col].var())
 
-  var_df = sub_df.drop_duplicates(group_col)[[group_col,"ont_median","num_cells_ont","ont_var"]]
+  var_df = sub_df.drop_duplicates(grouping_level_2)[[grouping_level_2,"ont_median","num_cells_ont","ont_var"]]
 
   # don't need to remove cell types with variance 0 when we're adjusting variance
   if not adj_var:
@@ -71,12 +71,12 @@ def main():
   #df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2", "tissue", "compartment"]
   df_cols = ["gene", "cell", "scZ", "svd_z0", "svd_z1", "svd_z2", "cell_gene", "f0", "f1", "f2"]
 
-  if args.sub_col.lower() != "dummy" and args.group_col not in df_cols:
-    df_cols.append(args.group_col)  
-    df_cols.append(args.sub_col)
+  if args.grouping_level_1.lower() != "dummy" and args.grouping_level_2 not in df_cols:
+    df_cols.append(args.grouping_level_2)  
+    df_cols.append(args.grouping_level_1)
 
-  if args.sub_col.lower == "dummy":
-    df_cols.append(args.group_col)
+  if args.grouping_level_1.lower == "dummy":
+    df_cols.append(args.grouping_level_2)
 
   df = pd.read_parquet(
       args.input,
@@ -86,12 +86,12 @@ def main():
   df["tiss_comp"] = df["tissue"] + df["compartment"]
 
   # subset to ontologies with > 20 cells
-  df["ontology_gene"] = df[args.group_col] + df["gene"]
+  df["ontology_gene"] = df[args.grouping_level_2] + df["gene"]
   df["num_ont_gene"] = df["ontology_gene"].map(df.groupby("ontology_gene")["cell_gene"].nunique())
   df = df[df["num_ont_gene"] > 10]
 
   z_cols = ["scZ","svd_z0","svd_z1","svd_z2"]
-  out = {"pval" : [], "gene" : [], "num_onts" : [],"z_col" : [],"max_abs_median" : [], "Tn1" : [], "sub_col" : []}
+  out = {"pval" : [], "gene" : [], "num_onts" : [],"z_col" : [],"max_abs_median" : [], "Tn1" : [], "grouping_level_1" : []}
   
   var_adj = 0.1
   adj_var = True
@@ -102,12 +102,12 @@ def main():
     out["perm_pval"] = []
   
   df["dummy"] = "null"
-  for tiss, tiss_df in df.groupby(args.sub_col):
+  for tiss, tiss_df in df.groupby(args.grouping_level_1):
     for gene, sub_df in tqdm(tiss_df.groupby("gene")):
       
       for z_col in z_cols:
     
-        var_df = get_var_df(sub_df, z_col, adj_var, args.group_col)
+        var_df = get_var_df(sub_df, z_col, adj_var, args.grouping_level_2)
         
         if var_df.shape[0] > 1:
           if adj_var:
@@ -120,7 +120,7 @@ def main():
           out["num_onts"].append(var_df.shape[0])
           out["z_col"].append(z_col)
           out["max_abs_median"].append((var_df["ont_median"].abs()).max())
-          out["sub_col"].append(tiss)
+          out["grouping_level_1"].append(tiss)
           
           if perm_pval:
             sub_df_perm = sub_df.copy()
@@ -128,8 +128,8 @@ def main():
               Tn1_dist = []
               # for i in range(args.num_perms):
               while len(Tn1_dist) < args.num_perms:
-                sub_df_perm[args.group_col] = np.random.permutation(sub_df_perm[args.group_col])
-                var_df = get_var_df(sub_df_perm, z_col, adj_var, args.group_col)
+                sub_df_perm[args.grouping_level_2] = np.random.permutation(sub_df_perm[args.grouping_level_2])
+                var_df = get_var_df(sub_df_perm, z_col, adj_var, args.grouping_level_2)
                 if var_df.shape[0] > 1:
                   if adj_var:
                     var_df["ont_var"] = var_df["ont_var"] + var_adj
@@ -149,18 +149,18 @@ def main():
 
   out_df.to_csv(args.outname_all_pvals, sep="\t", index=False)
 
-  out_df["gene_sub_col"] = out_df["gene"] + out_df["sub_col"]
+  out_df["gene_grouping_level_1"] = out_df["gene"] + out_df["grouping_level_1"]
 
   # reformat output
-  new_out = {"gene" : [], "num_onts" : [], "sub_col" : []}
+  new_out = {"gene" : [], "num_onts" : [], "grouping_level_1" : []}
   for z_col in z_cols:
     new_out["chi2_pval_adj_" + z_col] = []
     new_out["perm_pval_adj_" + z_col] = []
     new_out["max_abs_median_" + z_col] = []
     new_out["perm_cdf_" + z_col] = []
-  for gene_sub, gene_df in out_df.groupby("gene_sub_col"):
+  for gene_sub, gene_df in out_df.groupby("gene_grouping_level_1"):
     new_out["gene"].append(gene_df["gene"].iloc[0])
-    new_out["sub_col"].append(gene_df["sub_col"].iloc[0])
+    new_out["grouping_level_1"].append(gene_df["grouping_level_1"].iloc[0])
     new_out["num_onts"].append(gene_df["num_onts"].iloc[0])
     temp_z_cols = []
     for z_col, z_df in gene_df.groupby("z_col"):

@@ -12,8 +12,8 @@ def get_args():
   parser.add_argument("--second_evec", help="Second eigenvector file")
   parser.add_argument("--third_evec", help="Third eigenvector file")
   parser.add_argument("--splizvd", help="SpliZVD file")
-  parser.add_argument("--group_col", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
-  parser.add_argument("--sub_col", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
+  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
+  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname", help="Name of output file")
   parser.add_argument("--outname_log", help="Name of log file")
 
@@ -42,13 +42,13 @@ def main():
   splizsite_df = pd.concat(splizsite_dfs,axis=0).drop_duplicates()
   
   df = pd.read_csv(args.splizvd, sep="\t")
-  if (args.sub_col == "tiss_comp") & (args.sub_col not in df.columns):
+  if (args.grouping_level_1 == "tiss_comp") & (args.grouping_level_1 not in df.columns):
     df["tiss_comp"] = df["tissue"] + df["compartment"]
-  elif args.sub_col == "dummy":
+  elif args.grouping_level_1 == "dummy":
     df["dummy"] = "dummy"
 
   # combine outputs
-  out_dict = {"gene" : [],"sub_col" : [], "group_col" : [],  "SpliZsites" : []}
+  out_dict = {"gene" : [],"grouping_level_1" : [], "grouping_level_2" : [],  "SpliZsites" : []}
   z_cols = ["scZ","svd_z0","svd_z1","svd_z2"]
   
   for z_col in z_cols:
@@ -56,11 +56,11 @@ def main():
     out_dict["{}_pval".format(z_col)] = []
   
   for gene, gene_df in df.groupby("gene"):
-    for tiss, tiss_df in gene_df.groupby(args.sub_col):
-      for ont, ont_df in tiss_df.groupby(args.group_col):
+    for tiss, tiss_df in gene_df.groupby(args.grouping_level_1):
+      for ont, ont_df in tiss_df.groupby(args.grouping_level_2):
         out_dict["gene"].append(gene)
-        out_dict["sub_col"].append(tiss)
-        out_dict["group_col"].append(ont)
+        out_dict["grouping_level_1"].append(tiss)
+        out_dict["grouping_level_2"].append(ont)
         out_dict["SpliZsites"].append(",".join([str(x) for x in splizsite_df[splizsite_df["gene"] == gene]["end"]]))
         
         
@@ -68,12 +68,12 @@ def main():
   
           out_dict["{}_median".format(z_col)].append(ont_df[z_col].median())
           try:
-            pval = pval_df[(pval_df["gene"] == gene) & (pval_df["sub_col"] == tiss)]["perm_pval_adj_{}".format(z_col)].iloc[0]
+            pval = pval_df[(pval_df["gene"] == gene) & (pval_df["grouping_level_1"] == tiss)]["perm_pval_adj_{}".format(z_col)].iloc[0]
           except:
             pval = np.nan
           out_dict["{}_pval".format(z_col)].append(pval)
   out_df = pd.DataFrame.from_dict(out_dict)
-  out_df = out_df.sort_values(["gene","sub_col","scZ_median"])
+  out_df = out_df.sort_values(["gene","grouping_level_1","scZ_median"])
   out_df.to_csv(args.outname, sep="\t", index=False)
 
   logging.info("Completed")

@@ -14,8 +14,8 @@ process SUMMARIZE_RESULTS {
     path second_evec
     path third_evec
     val splizvd
-    val group_col
-    val sub_col
+    val grouping_level_2
+    val grouping_level_1
 
     output:
     path outname        , emit: summary
@@ -26,7 +26,7 @@ process SUMMARIZE_RESULTS {
     param_stem          = splizvd[1]
     splizvd_tsv         = splizvd[2]
 
-    outname             = "summary_${dataname}_${group_col}-${sub_col}_${param_stem}.tsv"
+    outname             = "summary_${dataname}_${grouping_level_2}-${grouping_level_1}_${param_stem}.tsv"
     outname_log         = "summarize_results.log"
 
     """
@@ -36,8 +36,8 @@ process SUMMARIZE_RESULTS {
         --second_evec ${second_evec} \\
         --third_evec ${third_evec} \\
         --splizvd ${splizvd_tsv} \\
-        --group_col ${group_col} \\
-        --sub_col ${sub_col} \\
+        --grouping_level_2 ${grouping_level_2} \\
+        --grouping_level_1 ${grouping_level_1} \\
         --outname ${outname} \\
         --outname_log ${outname_log}
     """
