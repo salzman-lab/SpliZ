@@ -69,40 +69,42 @@ workflow SPLIZ {
         params.light,
         params.SICILIAN
     )
- 
-     // Step 2: Calculate SplizVD
-    CALC_SPLIZVD (
-        CALC_RIJK_ZSCORE.out.pq,
-        params.svd_type      
-    )
+    
+    if (!params.calc_SpliZ_only) {
+        // Step 2: Calculate SplizVD
+        CALC_SPLIZVD (
+            CALC_RIJK_ZSCORE.out.pq,
+            params.svd_type      
+        )
 
-    // Step 3: Calculate variance adjusted permutations
-    PVAL_PERMUTATIONS (
-        CALC_SPLIZVD.out.pq,
-        params.n_perms,
-        params.group_col,
-        params.sub_col
-    )
+        // Step 3: Calculate variance adjusted permutations
+        PVAL_PERMUTATIONS (
+            CALC_SPLIZVD.out.pq,
+            params.n_perms,
+            params.group_col,
+            params.sub_col
+        )
 
-    PVAL_PERMUTATIONS.out.perm_pvals
-        .set{ ch_pval_permutations }
+        PVAL_PERMUTATIONS.out.perm_pvals
+            .set{ ch_pval_permutations }
 
-    // Step 4: Find SpliZ sites
-    FIND_SPLIZ_SITES (
-        CALC_SPLIZVD.out.geneMats, 
-        ch_pval_permutations
-    )
+        // Step 4: Find SpliZ sites
+        FIND_SPLIZ_SITES (
+            CALC_SPLIZVD.out.geneMats, 
+            ch_pval_permutations
+        )
 
-    // Step 5: Summarize results
-    SUMMARIZE_RESULTS (
-        ch_pval_permutations,
-        FIND_SPLIZ_SITES.out.first_evec,
-        FIND_SPLIZ_SITES.out.second_evec,
-        FIND_SPLIZ_SITES.out.third_evec,
-        CALC_SPLIZVD.out.tsv,
-        params.group_col,
-        params.sub_col
-    )
+        // Step 5: Summarize results
+        SUMMARIZE_RESULTS (
+            ch_pval_permutations,
+            FIND_SPLIZ_SITES.out.first_evec,
+            FIND_SPLIZ_SITES.out.second_evec,
+            FIND_SPLIZ_SITES.out.third_evec,
+            CALC_SPLIZVD.out.tsv,
+            params.group_col,
+            params.sub_col
+        )
+    }
 }
 
 /*
