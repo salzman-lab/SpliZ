@@ -3,6 +3,7 @@
 import argparse
 import numpy as np
 import pandas as pd
+import logging
 
 def get_args():
   parser = argparse.ArgumentParser(description="Create final summary file")
