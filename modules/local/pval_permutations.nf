@@ -15,9 +15,9 @@ process PVAL_PERMUTATIONS {
     val sub_col
 
     output:
-    path outname_all_pvals,     emit: all_pvals
-    path outname_perm_pvals,    emit: perm_pvals
-    path outname_log            emit: log
+    path outname_all_pvals      , emit: all_pvals
+    path outname_perm_pvals     , emit: perm_pvals
+    path outname_log            , emit: log
 
     script:
     dataname                    = splizvd[0]
