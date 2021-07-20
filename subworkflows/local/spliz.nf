@@ -28,5 +28,7 @@ workflow SPLIZ {
     )
 
     emit:
-    splizvd_pq = CALC_SPLIZVD.out.pq
+    splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
+    splizvd_tsv         = CALC_SPLIZVD.out.tsv
+    splizvd_pq          = CALC_SPLIZVD.out.pq
 }

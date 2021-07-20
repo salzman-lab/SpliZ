@@ -4,6 +4,8 @@ include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_result
 
 workflow ANALYSIS {
     take:
+    splizvd_geneMats
+    splizvd_tsv
     splizvd_pq
 
     main:
@@ -16,12 +18,12 @@ workflow ANALYSIS {
     )
 
     PVAL_PERMUTATIONS.out.perm_pvals
-        .set{ ch_pval_permutations }
+        .set{ pval_permutations }
 
     // Step 2: Find SpliZ sites
     FIND_SPLIZ_SITES (
-        CALC_SPLIZVD.out.geneMats, 
-        ch_pval_permutations
+        splizvd_geneMats, 
+        pval_permutations
     )
 
     // Step 3: Summarize results
@@ -30,7 +32,7 @@ workflow ANALYSIS {
         FIND_SPLIZ_SITES.out.first_evec,
         FIND_SPLIZ_SITES.out.second_evec,
         FIND_SPLIZ_SITES.out.third_evec,
-        CALC_SPLIZVD.out.tsv,
+        splizvd_tsv,
         params.grouping_level_2,
         params.grouping_level_1
     )
