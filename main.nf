@@ -227,7 +227,7 @@ process output_documentation {
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { SPLIZ } from './workflows/spliz' 
+include { SPLIZ_PIPELINE    } from './workflows/spliz_pipeline' 
 
 /*
 ========================================================================================
@@ -235,7 +235,7 @@ include { SPLIZ } from './workflows/spliz'
 ========================================================================================
 */
 workflow NFCORE_SPLIZ {
-    SPLIZ ()
+    SPLIZ_PIPELINE ()
 }
 
 workflow {
