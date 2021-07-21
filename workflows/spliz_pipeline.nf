@@ -53,7 +53,7 @@ workflow SPLIZ_PIPELINE {
     )
     
     if (!params.calc_SpliZ_only) {
-        ANLYSIS (
+        ANALYSIS (
             SPLIZ.out.splizvd_geneMats,
             SPLIZ.out.splizvd_tsv,
             SPLIZ.out.splizvd_pq
