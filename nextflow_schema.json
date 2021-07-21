@@ -42,7 +42,7 @@
                 "pin_z": {
                     "type": "number",
                     "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)",
-                    "default": 0.0
+                    "default": 0
                 },
                 "bounds": {
                     "type": "integer",
@@ -59,12 +59,12 @@
                     "description": "Type of SVD calculation",
                     "default": "normdonor"
                 },
-                "sub_col": {
+                "grouping_level_1": {
                     "type": "string",
                     "description": "Column to partition data by",
                     "default": "dummy"
                 },
-                "group_col": {
+                "grouping_level_2": {
                     "type": "string",
                     "description": "Column to group data by",
                     "default": "ontology"
@@ -73,6 +73,10 @@
                     "type": "integer",
                     "description": "Number of permutations",
                     "default": 100
+                },
+                "calc_SpliZ_only": {
+                    "type": "boolean",
+                    "description": "Only calculate SpliZ values"
                 }
             }
         },
@@ -264,7 +268,7 @@
         "show_hidden_params": {
             "type": "string"
         },
-        "fasta": {
+        "genome": {
             "type": "string"
         }
     }
