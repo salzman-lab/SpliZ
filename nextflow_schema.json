@@ -105,7 +105,7 @@
                     "fa_icon": "fas fa-question-circle"
                 },
                 "run_analysis": {
-                    "type": "string",
+                    "type": "boolean",
                     "description": "Run analysis steps?"
                 },
                 "meta": {
