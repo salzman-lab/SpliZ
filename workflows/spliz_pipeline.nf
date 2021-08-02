@@ -39,12 +39,13 @@ workflow SPLIZ_PIPELINE {
         PREPROCESS.out.pq
     )
     
-    ANALYSIS (
-        SPLIZ.out.splizvd_geneMats,
-        SPLIZ.out.splizvd_tsv,
-        SPLIZ.out.splizvd_pq
-    )
-    
+    if (params.run_analysis) {
+        ANALYSIS (
+            SPLIZ.out.splizvd_geneMats,
+            SPLIZ.out.splizvd_tsv,
+            SPLIZ.out.splizvd_pq
+        )
+    }
 }
 
 /*
