@@ -8,3 +8,6 @@ tests/
 testing/
 testing*
 *.pyc
+original*
+HCLA*
+nextflow*

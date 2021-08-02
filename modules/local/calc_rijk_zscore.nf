@@ -31,8 +31,8 @@ process CALC_RIJK_ZSCORE {
     def suff_light      = light     ? "_light" : ""
     def suff_SICILIAN   = SICILIAN  ? "_SICILIAN" : ""
     
-    def isLight         = light     ? "0" : "1"
-    def isSICILIAN      = SICILIAN  ? "0" : "1"
+    def isLight         = light     ? "1" : "0"
+    def isSICILIAN      = SICILIAN  ? "1" : "0"
 
     param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}${suff_light}${suff_SICILIAN}"
 
@@ -52,6 +52,6 @@ process CALC_RIJK_ZSCORE {
         --grouping_level_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
-        --outname_log ${outname_log} \\
+        --outname_log ${outname_log} 
     """
 }

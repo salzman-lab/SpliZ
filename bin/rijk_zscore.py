@@ -109,6 +109,10 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
 
   set_req = set(required_cols)
   set_df = set(list(df.columns))
+
+  print(set_req)
+  print(set_df)
+
   if set_df.issuperset(set_req):
     return True, required_cols
   else:
@@ -116,8 +120,8 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
 
 def main():
   args = get_args()
-  light = bool(args.isLight)
-  SICILIAN = bool(args.isSICILIAN)
+  light = bool(int(args.isLight))
+  SICILIAN = bool(int(args.isSICILIAN))
 
   logging.basicConfig(
     filename = args.outname_log,
@@ -137,6 +141,9 @@ def main():
 
   logging.info("Input column check")
 
+  if not SICILIAN:
+    df["called"] = 1
+  
   base_required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
   passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
   if passes_input_check: 
@@ -146,7 +153,7 @@ def main():
     sys.exit(1)
 
   df = df[required_cols]
-  df.head()
+
   logging.info("Rename SICILIAN columns")
 
   cols_dict = {
@@ -181,7 +188,6 @@ def main():
   # bin unknown genes
   idx = df[(df["gene"] == "") | (df["gene"] == "unknown") | (df["gene"].isna())].index
   df.loc[idx,"gene"] = "unknown_" + df["chrR1A"].astype(str) + "_" + (df.loc[idx]["juncStart"] - df.loc[idx]["juncStart"] % bin_size).astype(str)
-  print("replaced gene names",df[(df["gene"].isin(["unknown",""])) | (df["gene"].isna())].shape[0])
 
   logging.info("Replace with geneR1B")
 

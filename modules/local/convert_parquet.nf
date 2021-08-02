@@ -4,10 +4,9 @@ process CONVERT_PARQUET {
 
     input:
     path tsv
-    val dataname
 
     output:
-    path "*.pq", emit: pq
+    path "*.pq",    emit: pq
 
     script:
     pq = "${tsv.baseName}.pq"

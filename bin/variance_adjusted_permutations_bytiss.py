@@ -142,6 +142,12 @@ def main():
   out_df["perm_pval2"] = 2*out_df[["perm_pval","perm_pval_inv"]].min(axis=1)
 
   # adjust p values all together
+
+  # Try if old fails: if any na values, don't include in adjustment 
+  #out_df.loc[~out_df["pval"].isna(),"pval_adj"] = multipletests(out_df.loc[~out_df["pval"].isna(),"pval"], alpha, method = "fdr_bh")[1]
+  #out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
+
+  # OLD
   out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
   out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
 
