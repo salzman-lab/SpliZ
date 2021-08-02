@@ -11,15 +11,15 @@ workflow PREPROCESS {
         input_file = file(params.input_file)
         
         // Check if input file type is valid, throw error if invalid
-        def is_valid_input_file = input_file.extension in ["tsv", "pq"]
+        def is_valid_input_file = input_file.extension in ["tsv", "pq", "txt"]
         if (!is_valid_input_file) {
-            exit 1, "Invalid input file type supplied, options are *.pq or *.tsv."
+            exit 1, "Invalid input file type supplied, options are *.pq, *.txt, or *.tsv."
         } else { 
             // Initalize input channel
             ch_input = Channel.fromPath(params.input_file)
             
             // Initialize parquet channel for SICILIAN tsv
-            if (input_file.extension == "tsv") {
+            if (input_file.extension == "tsv" || input_file.extension == "txt") {
                 CONVERT_PARQUET (
                     ch_input
                 )
@@ -49,7 +49,7 @@ workflow PREPROCESS {
                     .splitCsv(header:false)
                     .map { row ->
                         tuple( 
-                            row[0],      // bam file sample_ID
+                            row[0],         // bam file sample_ID
                             file(row[1])    // bam file R1 path 
                         )
                     }   
@@ -60,16 +60,16 @@ workflow PREPROCESS {
                     .splitCsv(header:true)
                     .map { row ->
                         tuple( 
-                            row.sample_ID,      // bam file sample_ID
-                            file(row.read1),    // bam file R1 path 
-                            file(row.read2)     // bam file R2 path
+                            row[0],         // bam file sample_ID
+                            file(row[1]),   // bam file R1 path 
+                            file(row[2])    // bam file R2 path
                         )
                     }       
             }
         }
 
         // Check that bam channel has contents
-        ch_bam.ifEmpty{ exit 1, "No bam files found, please check inputs" }
+        //ch_bam.ifEmpty{ exit 1, "No bam files found, please check inputs" }
 
         // Preprocess bam files for SpliZ pipeline
         CONVERT_BAM (
