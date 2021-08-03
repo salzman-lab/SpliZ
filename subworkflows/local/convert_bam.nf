@@ -1,7 +1,8 @@
-include { CLASS_INPUT           } from '../../modules/local/class_input' 
-include { PROCESS_CLASS_INPUT   } from '../../modules/local/process_class_input' 
-include { ANN_SPLICES           } from '../../modules/local/ann_splices'
-include { CONVERT_PARQUET       } from '../../modules/local/convert_parquet'
+include { CLASS_INPUT               } from '../../modules/local/class_input' 
+include { PROCESS_CLASS_INPUT       } from '../../modules/local/process_class_input' 
+include { ANN_SPLICES               } from '../../modules/local/ann_splices'
+include { CONVERT_PARQUET           } from '../../modules/local/convert_parquet'
+include { CONVERT_SPLIT_PARQUET     } from './../../modules/local/convert_split_parquet'
 
 workflow CONVERT_BAM {
     take:
@@ -36,10 +37,10 @@ workflow CONVERT_BAM {
         params.splice_pickle
     )
 
-    CONVERT_PARQUET (
+    CONVERT_SPLIT_PARQUET (
         ANN_SPLICES.out.tsv
     )
 
     emit:
-    pq = CONVERT_PARQUET.out.pq
+    pq = CONVERT_SPLIT_PARQUET.out.pq
 }

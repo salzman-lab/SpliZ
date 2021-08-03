@@ -1,5 +1,6 @@
-include { CONVERT_SPLIT_PARQUET   } from './../../modules/local/convert_split_parquet'
-include { CONVERT_BAM       } from './convert_bam'
+include { CONVERT_SPLIT_PARQUET     } from './../../modules/local/convert_split_parquet'
+include { CONVERT_PARQUET           } from './../../modules/local/convert_parquet'
+include { CONVERT_BAM               } from './convert_bam'
 
 workflow PREPROCESS {
 
@@ -23,7 +24,7 @@ workflow PREPROCESS {
                 CONVERT_SPLIT_PARQUET (
                     ch_input
                 )
-                ch_pq = CONVERT_PARQUET.out.pq   
+                ch_pq = CONVERT_SPLIT_PARQUET.out.pq   
             // Initialize parquet channel for SICILIAN pq
             } else if (input_file.extension == "pq") {
                 ch_pq = ch_input        
