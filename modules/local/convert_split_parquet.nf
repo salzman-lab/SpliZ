@@ -9,10 +9,11 @@ process CONVERT_SPLIT_PARQUET {
     path "*.pq",    emit: pq
 
     script:
-    pq = "${tsv.baseName}.pq"
+    dataname = tsv.baseName
     """
     convert_tsv_to_parquet.py \\
-        --parquet ${pq} \\
-        --tsv ${tsv}
+        --tsv ${tsv} \\
+        --splitChr \\
+        --basename ${basename}
     """
 }
