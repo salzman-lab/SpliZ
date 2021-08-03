@@ -3,9 +3,6 @@ process CALC_SPLIZVD {
     //label 'process_high_memory'
     publishDir "${params.outdir}/SpliZ_values",  
         mode: "copy", 
-        pattern: "*.tsv"
-    publishDir "${params.outdir}/SpliZ_values",  
-        mode: "copy", 
         pattern: "*.pq"
     publishDir "${params.outdir}/logs", 
         mode: 'copy', 
@@ -21,7 +18,8 @@ process CALC_SPLIZVD {
     path outname_pq     , emit: pq
     path outname_tsv    , emit: tsv                                 
     path "*.geneMat"    , emit: geneMats
-    path "*.log"        , emit: log                                    
+    path "*.log"        , emit: log           
+    val param_stem      , emit: param_stem                         
 
     script:
     dataname        = rijk[0]

@@ -1,5 +1,6 @@
 include { CALC_RIJK_ZSCORE      }   from   '../../modules/local/calc_rijk_zscore'
 include { CALC_SPLIZVD          }   from   '../../modules/local/calc_splizvd'
+include { MERGE_CHR             }   from   '../../modules/local/merge_chr'
 
 workflow SPLIZ {
     take:
@@ -27,18 +28,28 @@ workflow SPLIZ {
     )
 
     // Step 3: Re merge by chromosome
-    CALC_SPLIZVD.out.geneMats.view()
-
     CALC_SPLIZVD.out.tsv
-        .collectFile { file ->
-            file.toString() + '\n'
+        .collectFile(newLine: true) { files ->
+            files.toString()
         }
-        .set{ file_list }
+        .set{ tsv_file_list }
+    
+    CALC_SPLIZVD.out.pq
+        .collectFile(newLine: true) { files ->
+            files.toString()
+        }
+        .set{ pq_file_list }
 
-    file_list.view()
+    MERGE_CHR (
+        tsv_file_list,
+        pq_file_list,
+        params.dataname,
+        CALC_SPLIZVD.out.param_stem,
+        params.svd_type
+    )
 
     emit:
     splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
-    splizvd_tsv         = CALC_SPLIZVD.out.tsv
-    splizvd_pq          = CALC_SPLIZVD.out.pq
+    splizvd_tsv         = MERGE_CHR.out.tsv
+    splizvd_pq          = MERGE_CHR.out.pq
 }
