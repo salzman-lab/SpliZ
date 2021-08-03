@@ -18,10 +18,10 @@ process CALC_SPLIZVD {
     val grouping_level_1
 
     output:
-    tuple val(dataname), val(param_stem), path(outname_pq)              , emit: pq
-    tuple val(chr), val(dataname), val(param_stem), path(outname_tsv)   , emit: tsv                                 
-    path "*.geneMat"                                                    , emit: geneMats
-    path "*.log"                                                        , emit: log                                    
+    path outname_pq     , emit: pq
+    path outname_tsv    , emit: tsv                                 
+    path "*.geneMat"    , emit: geneMats
+    path "*.log"        , emit: log                                    
 
     script:
     dataname        = rijk[0]
