@@ -1,6 +1,6 @@
 process SUMMARIZE_RESULTS {
     tag "${params.dataname}"
-    label 'process_low'
+    label 'process_high'
     publishDir "${params.outdir}",  
         mode: "copy", 
         pattern: "*.tsv"

@@ -1,6 +1,6 @@
 process FIND_SPLIZ_SITES {
     tag "${params.dataname}"
-    label 'process_medium'
+    //label 'process_high_memory'
     publishDir "${params.outdir}/SpliZ_sites",  
         mode: "copy", 
         pattern: "*.tsv"

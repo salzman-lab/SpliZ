@@ -1,6 +1,6 @@
 process PVAL_PERMUTATIONS {
     tag "${params.dataname}"
-    label 'process_medium'
+    //label 'process_high'
     publishDir "${params.outdir}/variance_adjusted_permutations",  
         mode: "copy", 
         pattern: "*.tsv"
