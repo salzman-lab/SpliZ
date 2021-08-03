@@ -27,21 +27,15 @@ workflow SPLIZ {
     )
 
     // Step 3: Re merge by chromosome
-    CALC_SPLIZVD.out.tsv
-        .map { it ->
-            tuple(it[0], it[3])
-        }
-        .groupTuple()
-        .view()
-        .collectFile { id, files ->
-            [
-                id,
-                files.collect{ it.toString() }.join('\n') + '\n'
-            ]
-        }
-        .set { channel_merge_list }
+    CALC_SPLIZVD.out.geneMats.view()
 
-    channel_merge_list.view()
+    CALC_SPLIZVD.out.tsv
+        .collectFile { file ->
+            file.toString() + '\n'
+        }
+        .set{ file_list }
+
+    file_list.view()
 
     emit:
     splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
