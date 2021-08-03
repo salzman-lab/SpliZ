@@ -28,8 +28,8 @@ workflow SPLIZ {
 
     // Step 3: Re merge by chromosome
     CALC_SPLIZVD.out.tsv
-        .view()
         .groupTuple(by:0)
+        .buffer(size: 3)
         .view()
         .collectFile { id, files ->
             [
