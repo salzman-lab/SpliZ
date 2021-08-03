@@ -1,4 +1,4 @@
-process CONVERT_PARQUET {
+process CONVERT_SPLIT_PARQUET {
     tag "${params.dataname}"
     //label 'process_high_memory'
 

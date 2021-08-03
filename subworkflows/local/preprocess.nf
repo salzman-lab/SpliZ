@@ -1,4 +1,4 @@
-include { CONVERT_PARQUET   } from './../../modules/local/convert_parquet'
+include { CONVERT_SPLIT_PARQUET   } from './../../modules/local/convert_split_parquet'
 include { CONVERT_BAM       } from './convert_bam'
 
 workflow PREPROCESS {
@@ -20,7 +20,7 @@ workflow PREPROCESS {
             
             // Initialize parquet channel for SICILIAN tsv
             if (input_file.extension == "tsv" || input_file.extension == "txt") {
-                CONVERT_PARQUET (
+                CONVERT_SPLIT_PARQUET (
                     ch_input
                 )
                 ch_pq = CONVERT_PARQUET.out.pq   
@@ -53,7 +53,6 @@ workflow PREPROCESS {
                             file(row[1])    // bam file R1 path 
                         )
                     }   
-                    .view()
             // Initialize bam channel for SS2 bams specified in samplesheet       
             } else if (params.libraryType == "SS2") {
                 ch_bam = Channel.fromPath(params.bam_samplesheet)
