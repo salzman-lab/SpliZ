@@ -19,7 +19,7 @@ def main():
   
   if args.splitChr:
     for i, x in df.groupby('chrR1A'):
-      outfile = ("{}_{}.pq", format(i, args.basename))
+      outfile = ("{}_{}.pq".format(i, args.basename))
       x.to_parquet(outfile)
   else:
     df.to_parquet(args.parquet)
