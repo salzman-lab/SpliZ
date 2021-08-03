@@ -8,7 +8,7 @@ workflow SPLIZ {
     main:
     // Step 1: Calculate RIJK zscore
     CALC_RIJK_ZSCORE (
-        ch_pq,
+        ch_pq.flatten(),
         params.pin_S,
         params.pin_z,
         params.bounds,
