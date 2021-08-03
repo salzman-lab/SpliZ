@@ -28,8 +28,8 @@ workflow SPLIZ {
 
     // Step 3: Re merge by chromosome
     CALC_SPLIZVD.out.tsv
-        .flatten()
         .view()
+        .flatten()
         .map { file ->
             key = file.getName().toString().tokenize("_")[0]
             return tuple(key, file)
