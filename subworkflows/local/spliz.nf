@@ -31,7 +31,6 @@ workflow SPLIZ {
         .map { it ->
             tuple(it[0], tuple(it[1], it[2], it[3]))
         }
-        .view()
         .groupTuple()
         .view()
         .collectFile { id, files ->
@@ -42,6 +41,7 @@ workflow SPLIZ {
         }
         .set { channel_merge_list }
 
+    channel_merge_list.view()
 
     emit:
     splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
