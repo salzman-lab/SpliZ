@@ -18,16 +18,17 @@ process CALC_SPLIZVD {
     val grouping_level_1
 
     output:
-    tuple val(dataname), val(param_stem), path(outname_pq)  , emit: pq
-    tuple val(dataname), val(param_stem), path(outname_tsv) , emit: tsv                                 
-    path "*.geneMat"                                        , emit: geneMats
-    path "*.log"                                            , emit: log                                    
+    tuple val(dataname), val(param_stem), path(outname_pq)              , emit: pq
+    tuple val(chr), val(dataname), val(param_stem), path(outname_tsv)   , emit: tsv                                 
+    path "*.geneMat"                                                    , emit: geneMats
+    path "*.log"                                                        , emit: log                                    
 
     script:
     dataname        = rijk[0]
     param_stem      = rijk[1]
     rijk_pq         = rijk[2]
 
+    chr             = "${dataname}".tokenize("_")[0]
     outname_pq      = "${dataname}_sym_SVD_${svd_type}_${param_stem}.pq"
     outname_tsv     = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
     outname_log     = "calc_splizvd.log"
