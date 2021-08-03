@@ -34,13 +34,13 @@ workflow SPLIZ {
             return tuple(key, file)
         }
         .groupTuple()
+        .view()
         .collectFile { id, files ->
             [
                 id,
                 files.collect{ it.toString() }.join('\n') + '\n'
             ]
         }
-        .view()
         .set { channel_merge_list }
     
     CALC_SPLIZVD.out.geneMats
@@ -50,13 +50,13 @@ workflow SPLIZ {
             return tuple(key, file)
         }
         .groupTuple()
+        .view()
         .collectFile { id, files ->
             [
                 id,
                 files.collect{ it.toString() }.join('\n') + '\n'
             ]
         }
-        .view()
         .set { channel_merge_list }
 
     emit:
