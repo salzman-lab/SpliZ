@@ -12,7 +12,6 @@ process CALC_RIJK_ZSCORE {
         pattern:    '*.log'
 
     input:
-    val dataname
     path pq 
     val pin_S 
     val pin_z 
@@ -36,6 +35,7 @@ process CALC_RIJK_ZSCORE {
 
     param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}${suff_light}${suff_SICILIAN}"
 
+    dataname            = pq.baseName
     outname_pq          = "${dataname}_sym_${param_stem}.pq"
     outname_tsv         = "${dataname}_sym_${param_stem}_subcol.tsv"
     outname_log         = "calc_rijk_zscore.log"

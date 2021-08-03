@@ -8,7 +8,6 @@ workflow SPLIZ {
     main:
     // Step 1: Calculate RIJK zscore
     CALC_RIJK_ZSCORE (
-        params.dataname,
         ch_pq,
         params.pin_S,
         params.pin_z,
@@ -26,6 +25,39 @@ workflow SPLIZ {
         params.grouping_level_2,
         params.grouping_level_1      
     )
+
+    // Step 3: Re merge by chromosome
+    CALC_SPLIZVD.out.tsv
+        .flatten()
+        .map { file ->
+            key = file.name.toString().tokenize("_")[0]
+            return tuple(key, file)
+        }
+        .groupTuple()
+        .collectFile { id, files ->
+            [
+                id,
+                files.collect{ it.toString() }.join('\n') + '\n'
+            ]
+        }
+        .view()
+        .set { channel_merge_list }
+    
+    CALC_SPLIZVD.out.geneMats
+        .flatten()
+        .map { file ->
+            key = file.name.toString().tokenize("_")[0]
+            return tuple(key, file)
+        }
+        .groupTuple()
+        .collectFile { id, files ->
+            [
+                id,
+                files.collect{ it.toString() }.join('\n') + '\n'
+            ]
+        }
+        .view()
+        .set { channel_merge_list }
 
     emit:
     splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
