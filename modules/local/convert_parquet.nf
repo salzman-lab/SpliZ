@@ -1,6 +1,6 @@
 process CONVERT_PARQUET {
     tag "${params.dataname}"
-    label 'process_low'
+    //label 'process_high_memory'
 
     input:
     path tsv

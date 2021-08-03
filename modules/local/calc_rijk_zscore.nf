@@ -1,6 +1,6 @@
 process CALC_RIJK_ZSCORE {
     tag "${params.dataname}"
-    label 'process_high'
+    //label 'process_high_memory'
     publishDir "${params.outdir}/SpliZ_values", 
         mode:       'copy', 
         pattern:    '*.tsv'

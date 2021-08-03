@@ -9,4 +9,4 @@
 #SBATCH --mem=60Gb
 
 conf=$1
-nextflow run main.nf -c ${conf} 
+nextflow run main.nf -c ${conf} -resume
