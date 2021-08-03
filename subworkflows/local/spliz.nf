@@ -30,7 +30,7 @@ workflow SPLIZ {
     CALC_SPLIZVD.out.tsv
         .flatten()
         .map { file ->
-            key = file.name.toString().tokenize("_")[0]
+            key = file.toString().tokenize("_")[0]
             return tuple(key, file)
         }
         .groupTuple()
@@ -46,7 +46,7 @@ workflow SPLIZ {
     CALC_SPLIZVD.out.geneMats
         .flatten()
         .map { file ->
-            key = file.name.toString().tokenize("_")[0]
+            key = file.toString().tokenize("_")[0]
             return tuple(key, file)
         }
         .groupTuple()
