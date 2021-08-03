@@ -10,3 +10,6 @@ testing*
 *.pyc
 HLCA*
 original*
+TSP*
+*out
+*err
