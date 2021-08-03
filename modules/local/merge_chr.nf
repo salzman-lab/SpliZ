@@ -12,8 +12,8 @@ publishDir "${params.outdir}/SpliZ_values",
   val svd_type
 
   output:
-  path "*.tsv"  , tsv
-  path "*.pq"   , pq
+  path "*.tsv"  , emit: tsv
+  path "*.pq"   , emit: pq
 
   script:
   outname_pq    = "${dataname}_sym_SVD_${svd_type}_${param_stem}.pq"
