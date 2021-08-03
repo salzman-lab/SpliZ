@@ -8,15 +8,8 @@ tests/
 testing/
 testing*
 *.pyc
-<<<<<<< HEAD
 HLCA*
 original*
 TSP*
 *out
 *err
-=======
-original*
-HCLA*
-nextflow*
-TSP*
->>>>>>> dev-bypassSICILIAN
