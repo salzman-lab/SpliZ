@@ -29,7 +29,7 @@ workflow SPLIZ {
     // Step 3: Re merge by chromosome
     CALC_SPLIZVD.out.tsv
         .map { it ->
-            tuple(it[0], tuple(it[1], it[2], it[3]))
+            tuple(it[0], it[3])
         }
         .groupTuple()
         .view()
