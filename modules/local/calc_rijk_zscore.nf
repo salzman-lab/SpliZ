@@ -25,7 +25,7 @@ process CALC_RIJK_ZSCORE {
     path "*.pq"         , emit: pq
     path "*.tsv"        , emit: tsv    
     path "*.log"        , emit: log   
-    path param_stem     , emit: param_stem                                 
+    val param_stem      , emit: param_stem                                 
 
     script:
     def suff_light      = light     ? "_light" : ""

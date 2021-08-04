@@ -12,7 +12,7 @@ process PVAL_PERMUTATIONS {
     val param_stem
     path splizvd_pq
     val n_perms
-    va dataname
+    val dataname
     val grouping_level_2
     val grouping_level_1
 

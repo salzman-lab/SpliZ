@@ -22,28 +22,15 @@ workflow SPLIZ {
     param_stem = CALC_RIJK_ZSCORE.out.param_stem
 
     // Step 2: Re merge by chromosome
-    CALC_RIJK_ZSCORE.out.tsv
-        .collectFile(newLine: true) { files ->
-            files.toString()
-        }
-        .set{ tsv_file_list }
-    
     CALC_RIJK_ZSCORE.out.pq
-        .collectFile(newLine: true) { files ->
-            files.toString()
+        .collectFile(newLine: true) { file ->
+            file.toString()
         }
-        .set{ pq_file_list }
+        .set{ ch_rijk_pq }
     
-    MERGE_CHR (
-        tsv_file_list,
-        pq_file_list,
-        params.dataname,
-        param_stem,
-    )
-
     // Step 3: Calculate SplizVD
     CALC_SPLIZVD (
-        MERGE_CHR.out.pq,
+        ch_rijk_pq,
         params.dataname,
         param_stem,
         params.svd_type,
