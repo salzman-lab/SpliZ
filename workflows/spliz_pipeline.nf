@@ -41,6 +41,7 @@ workflow SPLIZ_PIPELINE {
     
     if (params.run_analysis) {
         ANALYSIS (
+            SPLIZ.out.param_stem,
             SPLIZ.out.splizvd_geneMats,
             SPLIZ.out.splizvd_tsv,
             SPLIZ.out.splizvd_pq

@@ -4,6 +4,7 @@ include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_result
 
 workflow ANALYSIS {
     take:
+    param_stem
     splizvd_geneMats
     splizvd_tsv
     splizvd_pq
@@ -11,8 +12,10 @@ workflow ANALYSIS {
     main:
     // Step 1: Calculate variance adjusted permutations
     PVAL_PERMUTATIONS (
+        param_stem,
         splizvd_pq,
         params.n_perms,
+        params.dataname,
         params.grouping_level_2,
         params.grouping_level_1
     )
