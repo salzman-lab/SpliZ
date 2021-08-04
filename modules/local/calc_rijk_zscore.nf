@@ -22,9 +22,10 @@ process CALC_RIJK_ZSCORE {
     val grouping_level_1
 
     output:
-    tuple val(dataname), val(param_stem), path("*.pq")  , emit: pq
-    path "*.tsv"                                        , emit: tsv    
-    path "*.log"                                        , emit: log                                    
+    path "*.pq"         , emit: pq
+    path "*.tsv"        , emit: tsv    
+    path "*.log"        , emit: log   
+    path param_stem     , emit: param_stem                                 
 
     script:
     def suff_light      = light     ? "_light" : ""

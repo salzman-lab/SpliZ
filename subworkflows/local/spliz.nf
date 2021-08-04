@@ -19,33 +19,34 @@ workflow SPLIZ {
         params.grouping_level_1
     )
     
-    // Step 2: Calculate SplizVD
-    CALC_SPLIZVD (
-        CALC_RIJK_ZSCORE.out.pq,
-        params.svd_type,
-        params.grouping_level_2,
-        params.grouping_level_1      
-    )
-
-    // Step 3: Re merge by chromosome
-    CALC_SPLIZVD.out.tsv
+    // Step 2: Re merge by chromosome
+    CALC_RIJK_ZSCORE.out.tsv
         .collectFile(newLine: true) { files ->
             files.toString()
         }
         .set{ tsv_file_list }
     
-    CALC_SPLIZVD.out.pq
+    CALC_RIJK_ZSCORE.out.pq
         .collectFile(newLine: true) { files ->
             files.toString()
         }
         .set{ pq_file_list }
-
+    
     MERGE_CHR (
         tsv_file_list,
         pq_file_list,
         params.dataname,
         CALC_SPLIZVD.out.param_stem,
-        params.svd_type
+    )
+
+    // Step 3: Calculate SplizVD
+    CALC_SPLIZVD (
+        MERGE_CHR.out.pq,
+        params.dataname,
+        CALC_SPLIZVD.out.param_stem,
+        params.svd_type,
+        params.grouping_level_2,
+        params.grouping_level_1      
     )
 
     emit:
