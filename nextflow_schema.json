@@ -38,7 +38,7 @@
                 "pin_z": {
                     "type": "number",
                     "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)",
-                    "default": 0
+                    "default": 0.0
                 },
                 "bounds": {
                     "type": "integer",

@@ -13,7 +13,7 @@
 ## Introduction
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
-**nf-core/spliz** is a bioinformatics best-practise analysis pipeline for
+**nf-core/spliz** is a bioinformatics best-practise analysis pipeline for calculating the splicing z-score for single cell RNA-seq analysis.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
@@ -44,11 +44,51 @@ See [usage docs](https://nf-co.re/spliz/usage) for all of the available options 
 ## Pipeline Summary
 
 By default, the pipeline currently performs the following:
+* Calculate the SpliZ scores for:
+    * Identifying variable splice sites
+    * Identifying differential splicing between cell types.
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of default steps of pipeline -->
+## Input Parameters
 
-* Sequencing quality control (`FastQC`)
-* Overall pipeline run summaries (`MultiQC`)
+| Argument              | Description       |Example Usage  |
+| --------------------- | ---------------- |-----------|
+| `dataname`            | Descriptive name for SpliZ run        | "Tumor_5" |
+| `run_analysis`        | If the pipeline will perform splice site identifcation and differential splicing analysis | `true`, `false` |
+| `SICILIAN`            | If the input file is output from [SICILIAN](https://github.com/salzmanlab/SICILIAN) | `true`, `false` |
+| `bam_dir`             | If `SICILIAN` = `false`, this path specifies the location of the input bam file | */home/data/* |
+| `bam_samplesheet`     | If `SICILIAN` = `false`, this file specifies the locations of the input bam files. Samplesheet formatting is specified below. | *Tumor_5_samplesheet.csv* |
+| `pin_S`               | Bound splice site residuals at this quantile (e.g. values in the lower `pin_S` quantile and the upper 1 - `pin_S` quantile will be rounded to the quantile limits) | 0.1 |
+| `pin_z`               | Bound SpliZ scores at this quantile (e.g. values in the lower `pin_z` quantile and the upper 1 - `pin_z` quantile will be rounded to the quantile limits) | 0 |  
+| `bounds`              | Only include cell/gene pairs that have more than this many junctional reads for the gene | 5 |
+| `light`               | Only output the minimum number of columns | `true`, `false` |
+| `svd_type`            | Type of SVD calculation | `normdonor`, `normgene` |
+| `n_perms`             | Number of permutations | 100 |
+| `grouping_level_1`    | Metadata column by which the data is intially partitioned  | "tissue" |
+| `grouping_level_2`    | Metadata column by which the partitioned data is grouped | "compartment" |
+| `libraryType`         | Library prepration method of the input data | `10X`, `SS2` |
+| `annotator_pickle`    | [Genome-specific annotation file for gene names](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq.pkl* |
+| `exon_pickle`         | [Genome-specific annotation file for exon boundaries](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_exon_bounds.pkl* |
+| `splice_pickle`       | [Genome-specific annotation file for splice sites](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_splices.pkl* |
+| `gtf`                 | GTF file used as the reference annotation file for the genome assembly | *GRCh38_genomic.gtf* |
+| `meta`                | If `SICILIAN` = `false`, this file contains per-cell annotations. This file must contain columns for `grouping_level_1` and `grouping_level_2`. | *metadata_tumor_5.tsv* |
+
+### Samplesheets
+
+The samplesheet must be in comma-separated value(CSV) format. The sampleID must be a unique identifier for each bam file or set of bam files.
+
+Input files from 10X will have 2 columns: sampleID and bam file
+```
+Tumor_5_S1,tumor_5_S1_L001.bam
+Tumor_5_S2,tumor_5_S1_L002.bam
+Tumor_5_S3,tumor_5_S3_L002.bam
+```
+
+Input files from SS2 will have 3 columns: sampleID, R1 bam file, and R2 bam file
+```
+Tumor_5_S1,tumor_5_S1_L001.bam
+Tumor_5_S2,tumor_5_S1_L002.bam
+Tumor_5_S3,tumor_5_S3_L002.bam
+```
 
 ## Documentation
 
@@ -75,6 +115,13 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi. -->
 <!-- If you use  nf-core/spliz for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+This repositiory contains code to perform the analyses in this paper:
+
+> **The SpliZ generalizes “Percent Spliced In” to reveal regulated splicing at single-cell resolution**
+>
+> Julia Eve Olivieri, Roozbeh Dehghannasiri, Julia Salzman.
+>
+> _bioRxiv_ 2021 Mar 31. doi: [10.1101/2020.11.10.377572](https://doi.org/10.1101/2020.11.10.377572).
 
 You can cite the `nf-core` publication as follows:
 
@@ -84,6 +131,4 @@ You can cite the `nf-core` publication as follows:
 >
 > _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
 
-In addition, references of tools and data used in this pipeline are as follows:
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
