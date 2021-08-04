@@ -51,6 +51,6 @@ workflow SPLIZ {
 
     emit:
     splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
-    splizvd_tsv         = MERGE_CHR.out.tsv
-    splizvd_pq          = MERGE_CHR.out.pq
+    splizvd_tsv         = CALC_SPLIZVD.out.tsv
+    splizvd_pq          = CALC_SPLIZVD.out.pq
 }
