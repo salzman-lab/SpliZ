@@ -24,9 +24,9 @@ workflow PREPROCESS {
             ch_input = Channel.fromPath(params.input_file)
             
             if (input_file.extension == "tsv" || input_file.extension == "txt") {
-                convert_paruet = true
+                convert_parquet = true
             } else if (input_file.extension == "pq") {
-                convert_pq = false  
+                convert_parquet = false  
             }
         }
 
