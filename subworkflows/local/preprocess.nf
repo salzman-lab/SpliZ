@@ -8,9 +8,15 @@ workflow PREPROCESS {
     // Prepare inputs from SICILIAN output files
     if (params.SICILIAN) {   
         // Stage input file   
+        if (!params.light && !params.n_perms) {
+            exit 1, "yes"
+        }
+        if (!params.input_file){
+            exit 1, "test error"
+        }
         input_file = file(params.input_file)
         
-        // Check if input file type is valid, throw error if invalid
+        // Check if input file type is valid
         def is_valid_input_file = input_file.extension in ["tsv", "pq", "txt"]
         if (!is_valid_input_file) {
             exit 1, "Invalid input file type supplied, options are *.pq, *.txt, or *.tsv."
@@ -33,16 +39,18 @@ workflow PREPROCESS {
     // Prepare inputs from non-SICILIAN bam files
     } else {
         // Initialize bam channel for bams stored in one directory
-        if (params.bam_method == "directory") {
+        if (params.containsKey(params.bam_dir)) {
             ch_bam = Channel.fromPath("${params.bam_dir}/*.bam")
                 .map { it ->
-                    tuple ( it.baseName, it )
+                    tuple( 
+                        it.baseName, 
+                        it 
+                    )
                 }
         } 
 
         // Initialize bam channel for bams specified in samplesheet
-        if (params.bam_method == "samplesheet") {
-
+        if (params.containsKey(params.bam_samplesheet)) {
             // Initialize bam channel for 10X bams specified in samplesheet
             if (params.libraryType == "10X") {
                 ch_bam = Channel.fromPath(params.bam_samplesheet)
@@ -53,7 +61,6 @@ workflow PREPROCESS {
                             file(row[1])    // bam file R1 path 
                         )
                     }   
-                    .view()
             // Initialize bam channel for SS2 bams specified in samplesheet       
             } else if (params.libraryType == "SS2") {
                 ch_bam = Channel.fromPath(params.bam_samplesheet)
@@ -67,9 +74,6 @@ workflow PREPROCESS {
                     }       
             }
         }
-
-        // Check that bam channel has contents
-        //ch_bam.ifEmpty{ exit 1, "No bam files found, please check inputs" }
 
         // Preprocess bam files for SpliZ pipeline
         CONVERT_BAM (
