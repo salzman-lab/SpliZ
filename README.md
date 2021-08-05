@@ -55,6 +55,7 @@ By default, the pipeline currently performs the following:
 | `dataname`            | Descriptive name for SpliZ run        | "Tumor_5" |
 | `run_analysis`        | If the pipeline will perform splice site identifcation and differential splicing analysis | `true`, `false` |
 | `SICILIAN`            | If the input file is output from [SICILIAN](https://github.com/salzmanlab/SICILIAN) | `true`, `false` |
+| `input_file`          | If `SICILIAN` = `true`, this file is the output of the SICILIAN postprocessing step | *tumor_5_with_postprocessing.txt* |
 | `bam_dir`             | If `SICILIAN` = `false`, this path specifies the location of the input bam file | */home/data/* |
 | `bam_samplesheet`     | If `SICILIAN` = `false`, this file specifies the locations of the input bam files. Samplesheet formatting is specified below. | *Tumor_5_samplesheet.csv* |
 | `pin_S`               | Bound splice site residuals at this quantile (e.g. values in the lower `pin_S` quantile and the upper 1 - `pin_S` quantile will be rounded to the quantile limits) | 0.1 |
@@ -79,15 +80,15 @@ The samplesheet must be in comma-separated value(CSV) format. The sampleID must 
 Input files from 10X will have 2 columns: sampleID and bam file
 ```
 Tumor_5_S1,tumor_5_S1_L001.bam
-Tumor_5_S2,tumor_5_S1_L002.bam
-Tumor_5_S3,tumor_5_S3_L002.bam
+Tumor_5_S2,tumor_5_S2_L001.bam
+Tumor_5_S3,tumor_5_S3_L001.bam
 ```
 
 Input files from SS2 will have 3 columns: sampleID, R1 bam file, and R2 bam file
 ```
-Tumor_5_S1,tumor_5_S1_L001.bam
-Tumor_5_S2,tumor_5_S1_L002.bam
-Tumor_5_S3,tumor_5_S3_L002.bam
+Tumor_5_S1,tumor_5_S1_R1.bam,tumor_5_S1_R2.bam
+Tumor_5_S2,tumor_5_S2_R1.bam,tumor_5_S2_R2.bam
+Tumor_5_S3,tumor_5_S3_R1.bam,tumor_5_S3_R2.bam
 ```
 
 ## Documentation
