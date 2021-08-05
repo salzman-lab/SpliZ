@@ -21,6 +21,7 @@ process CALC_RIJK_ZSCORE {
     val SICILIAN
     val grouping_level_2
     val grouping_level_1
+    val convert_parquet
 
     output:
     tuple val(dataname), val(param_stem), path("*.pq")  , emit: pq
@@ -40,18 +41,35 @@ process CALC_RIJK_ZSCORE {
     outname_tsv         = "${dataname}_sym_${param_stem}_subcol.tsv"
     outname_log         = "calc_rijk_zscore.log"
     
-    """
-    rijk_zscore.py \\
-        --parquet ${pq} \\
-        --pinning_S ${pin_S} \\
-        --pinning_z ${pin_z} \\
-        --lower_bound ${bounds} \\
-        --isLight ${isLight} \\
-        --isSICILIAN ${isSICILIAN} \\
-        --grouping_level_2 ${grouping_level_2} \\
-        --grouping_level_1 ${grouping_level_1} \\
-        --outname_pq ${outname_pq} \\
-        --outname_tsv ${outname_tsv} \\
-        --outname_log ${outname_log} 
-    """
+    if (convert_parquet):
+        """
+        rijk_zscore.py \\
+            --parquet ${pq} \\
+            --pinning_S ${pin_S} \\
+            --pinning_z ${pin_z} \\
+            --lower_bound ${bounds} \\
+            --isLight ${isLight} \\
+            --isSICILIAN ${isSICILIAN} \\
+            --grouping_level_2 ${grouping_level_2} \\
+            --grouping_level_1 ${grouping_level_1} \\
+            --outname_pq ${outname_pq} \\
+            --outname_tsv ${outname_tsv} \\
+            --outname_log ${outname_log} \\
+            --convert_parquet
+        """
+    else:
+        """
+        rijk_zscore.py \\
+            --parquet ${pq} \\
+            --pinning_S ${pin_S} \\
+            --pinning_z ${pin_z} \\
+            --lower_bound ${bounds} \\
+            --isLight ${isLight} \\
+            --isSICILIAN ${isSICILIAN} \\
+            --grouping_level_2 ${grouping_level_2} \\
+            --grouping_level_1 ${grouping_level_1} \\
+            --outname_pq ${outname_pq} \\
+            --outname_tsv ${outname_tsv} \\
+            --outname_log ${outname_log} 
+        """
 }

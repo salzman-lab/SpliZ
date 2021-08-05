@@ -25,13 +25,10 @@ workflow PREPROCESS {
             
             // Initialize parquet channel for SICILIAN tsv
             if (input_file.extension == "tsv" || input_file.extension == "txt") {
-                CONVERT_PARQUET (
-                    ch_input
-                )
-                ch_pq = CONVERT_PARQUET.out.pq   
+                convert_paruet = true
             // Initialize parquet channel for SICILIAN pq
             } else if (input_file.extension == "pq") {
-                ch_pq = ch_input        
+                convert_pq = false  
             }
         }
 
@@ -97,6 +94,7 @@ workflow PREPROCESS {
     }
 
     emit:
-    pq = ch_pq
+    input               = ch_input
+    convert_parquet     = convert_parquet
 
 }
