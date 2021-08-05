@@ -3,7 +3,6 @@ include { CALC_SPLIZVD }   from   '../../modules/local/calc_splizvd'
 workflow SPLIZ {
     take:
     ch_input
-    convert_parquet
 
     main:
 
