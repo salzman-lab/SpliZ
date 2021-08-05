@@ -7,13 +7,12 @@ workflow PREPROCESS {
 
     // Prepare inputs from SICILIAN output files
     if (params.SICILIAN) {   
-        // Stage input file   
-        if (!params.light && !params.n_perms) {
-            exit 1, "yes"
-        }
+        // Check that input_file is provided
         if (!params.input_file){
-            exit 1, "test error"
+            exit 1, "No input_file provided."
         }
+
+        // Stage input_file
         input_file = file(params.input_file)
         
         // Check if input file type is valid
@@ -39,7 +38,7 @@ workflow PREPROCESS {
     // Prepare inputs from non-SICILIAN bam files
     } else {
         // Initialize bam channel for bams stored in one directory
-        if (params.containsKey(params.bam_dir)) {
+        if (params.bam_dir) {
             ch_bam = Channel.fromPath("${params.bam_dir}/*.bam")
                 .map { it ->
                     tuple( 
@@ -50,7 +49,7 @@ workflow PREPROCESS {
         } 
 
         // Initialize bam channel for bams specified in samplesheet
-        if (params.containsKey(params.bam_samplesheet)) {
+        if (params.bam_samplesheet) {
             // Initialize bam channel for 10X bams specified in samplesheet
             if (params.libraryType == "10X") {
                 ch_bam = Channel.fromPath(params.bam_samplesheet)
@@ -74,6 +73,19 @@ workflow PREPROCESS {
                     }       
             }
         }
+
+        // Must provide either samplesheet or dir
+        if (params.bam_samplesheet && params.bam_dir) {
+            exit 1, "Only provide either bam_samplesheet or bam_dir, not both."
+        }
+        if (!params.bam_samplesheet && !params.bam_dir) {
+            exit 1, "Must provide either bam_samplesheet or bam_dir."
+        }
+
+        // Check that bam channel is not empty
+        ch_bam.ifEmpty (
+            exit 1, "No bam files provied."
+        )
 
         // Preprocess bam files for SpliZ pipeline
         CONVERT_BAM (

@@ -67,10 +67,6 @@
                     "type": "string",
                     "description": "File for input samplesheet"
                 },
-                "bam_method": {
-                    "type": "string",
-                    "description": "Options: directory, samplesheet"
-                },
                 "annotator_pickle": {
                     "type": "string",
                     "description": "Annotator pickle file"
@@ -91,6 +87,10 @@
                     "type": "string",
                     "description": "GTF annotation file"
                 },
+                "bam_dir": {
+                    "type": "string",
+                    "description": "Directory of bam files"
+                },
                 "help": {
                     "type": "boolean",
                     "description": "Display help text.",
@@ -109,16 +109,12 @@
             "required": [
                 "dataname",
                 "input_file",
-                "pin_S",
-                "pin_z",
                 "bounds",
                 "svd_type",
                 "grouping_level_1",
                 "grouping_level_2",
                 "n_perms",
-                "annotator_pickle",
-                "libraryType",
-                "gtf"
+                "libraryType"
             ]
         },
         "max_job_request_options": {
