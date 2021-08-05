@@ -1,4 +1,4 @@
-include { CALC_SPLIZVD          }   from   '../../modules/local/calc_splizvd'
+include { CALC_SPLIZVD }   from   '../../modules/local/calc_splizvd'
 
 workflow SPLIZ {
     take:
@@ -8,7 +8,7 @@ workflow SPLIZ {
     main:
 
     def suff_light      = params.light     ? "_light" : ""
-    def suff_SICILIAN   = paramsSICILIAN  ? "_SICILIAN" : ""
+    def suff_SICILIAN   = params.SICILIAN  ? "_SICILIAN" : ""
     
     def isLight         = params.light     ? "1" : "0"
     def isSICILIAN      = params.SICILIAN  ? "1" : "0"
