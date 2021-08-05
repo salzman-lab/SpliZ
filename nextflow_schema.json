@@ -32,18 +32,15 @@
                 },
                 "pin_S": {
                     "type": "number",
-                    "description": "Bound splice site residuals at this quantile (e.g. values in the lower pin_S quantile and the upper 1 - pin_S quantile will be rounded to the quantile limits)",
-                    "default": 0.1
+                    "description": "Bound splice site residuals at this quantile (e.g. values in the lower pin_S quantile and the upper 1 - pin_S quantile will be rounded to the quantile limits)"
                 },
                 "pin_z": {
                     "type": "number",
-                    "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)",
-                    "default": 0.0
+                    "description": "Bound SpliZ scores at this quantile (e.g. values in the lower pin_z quantile and the upper 1 - pin_z quantile will be rounded to the quantile limits)"
                 },
                 "bounds": {
                     "type": "integer",
-                    "description": "Only include cell/gene pairs that have more than this many junctional reads for the gene",
-                    "default": 5
+                    "description": "Only include cell/gene pairs that have more than this many junctional reads for the gene"
                 },
                 "light": {
                     "type": "boolean",
@@ -52,23 +49,19 @@
                 },
                 "svd_type": {
                     "type": "string",
-                    "description": "Type of SVD calculation",
-                    "default": "normdonor"
+                    "description": "Type of SVD calculation"
                 },
                 "grouping_level_1": {
                     "type": "string",
-                    "description": "Column to partition data by",
-                    "default": "dummy"
+                    "description": "Column to partition data by"
                 },
                 "grouping_level_2": {
                     "type": "string",
-                    "description": "Column to group data by",
-                    "default": "ontology"
+                    "description": "Column to group data by"
                 },
                 "n_perms": {
                     "type": "integer",
-                    "description": "Number of permutations",
-                    "default": 100
+                    "description": "Number of permutations"
                 },
                 "bam_samplesheet": {
                     "type": "string",
@@ -112,7 +105,21 @@
                     "type": "string",
                     "description": "Metadata file containing entries for each barcode/grouping_col_1/grouping_col_2 combination"
                 }
-            }
+            },
+            "required": [
+                "dataname",
+                "input_file",
+                "pin_S",
+                "pin_z",
+                "bounds",
+                "svd_type",
+                "grouping_level_1",
+                "grouping_level_2",
+                "n_perms",
+                "annotator_pickle",
+                "libraryType",
+                "gtf"
+            ]
         },
         "max_job_request_options": {
             "title": "Max job request options",
