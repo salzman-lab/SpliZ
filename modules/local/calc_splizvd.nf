@@ -35,7 +35,7 @@ process CALC_SPLIZVD {
     outname_tsv         = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
     outname_log         = "calc_splizvd.log"
 
-    if (convert_parquet == true):
+    if (convert_parquet == true)
         """
         calc_splizvd.py \\
             --input ${input} \\
@@ -51,7 +51,7 @@ process CALC_SPLIZVD {
             --outname_log ${outname_log} \\
             --convert_parquet
         """
-    else: 
+    if (convert_parquet == false)
         """
         calc_splizvd.py \\
             --input ${input} \\
