@@ -1,6 +1,5 @@
 process CALC_SPLIZVD {
     tag "${params.dataname}"
-    //label 'process_high_memory'
     publishDir "${params.outdir}/SpliZ_values",  
         mode: "copy", 
         pattern: "*.tsv"
@@ -36,7 +35,7 @@ process CALC_SPLIZVD {
     outname_tsv     = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
     outname_log     = "calc_splizvd.log"
 
-    if (convert_parquet):
+    if (convert_parquet == true)
         """
         calc_splizvd.py \\
             --input ${input} \\
@@ -59,7 +58,7 @@ process CALC_SPLIZVD {
             --pinning_S ${pin_S} \\
             --pinning_z ${pin_z} \\
             --lower_bound ${bounds} \\
-            --isLight ${isLight} \\
+            --isLight ${isLight} \\ 
             --isSICILIAN ${isSICILIAN} \\
             --grouping_level_2 ${grouping_level_2} \\
             --grouping_level_1 ${grouping_level_1} \\
