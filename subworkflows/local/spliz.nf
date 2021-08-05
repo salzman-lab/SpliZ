@@ -13,7 +13,7 @@ workflow SPLIZ {
     def isLight         = params.light     ? "1" : "0"
     def isSICILIAN      = params.SICILIAN  ? "1" : "0"
 
-    param_stem          = "S_${pin_S}_z_${pin_z}_b_${bounds}${suff_light}${suff_SICILIAN}"
+    param_stem          = "S_${params.pin_S}_z_${params.pin_z}_b_${params.bounds}${suff_light}${suff_SICILIAN}"
 
     // Step 1: Calculate RIJK zscore
     CALC_SPLIZVD (

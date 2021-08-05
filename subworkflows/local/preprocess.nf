@@ -23,10 +23,8 @@ workflow PREPROCESS {
             // Initalize input channel
             ch_input = Channel.fromPath(params.input_file)
             
-            // Initialize parquet channel for SICILIAN tsv
             if (input_file.extension == "tsv" || input_file.extension == "txt") {
                 convert_paruet = true
-            // Initialize parquet channel for SICILIAN pq
             } else if (input_file.extension == "pq") {
                 convert_pq = false  
             }
