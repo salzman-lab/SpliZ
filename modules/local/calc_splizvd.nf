@@ -46,8 +46,7 @@ process CALC_SPLIZVD {
         --grouping_level_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
-        --outname_log ${outname_log} \\
-        --convert_parquet
+        --outname_log ${outname_log} 
     """
 
 } 
