@@ -42,6 +42,7 @@ process CALC_SPLIZVD {
         --lower_bound ${bounds} \\
         --isLight ${isLight} \\
         --isSICILIAN ${isSICILIAN} \\
+        --svd_type ${svd_type}
         --grouping_level_2 ${grouping_level_2} \\
         --grouping_level_1 ${grouping_level_1} \\
         --outname_pq ${outname_pq} \\
