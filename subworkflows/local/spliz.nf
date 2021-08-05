@@ -27,8 +27,7 @@ workflow SPLIZ {
         params.grouping_level_2,
         params.grouping_level_1,
         isLight,
-        isSICILIAN,
-        convert_parquet
+        isSICILIAN
     )
 
     emit:

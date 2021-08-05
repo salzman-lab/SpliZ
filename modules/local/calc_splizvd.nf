@@ -22,7 +22,6 @@ process CALC_SPLIZVD {
     val grouping_level_2
     val isLight
     val isSICILIAN
-    val convert_parquet
 
     output:
     path outname_pq     , emit: pq
@@ -34,36 +33,21 @@ process CALC_SPLIZVD {
     outname_pq          = "${dataname}_sym_SVD_${svd_type}_${param_stem}.pq"
     outname_tsv         = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
     outname_log         = "calc_splizvd.log"
-    if (convert_parquet == true):
-        """
-        calc_splizvd.py \\
-            --input ${input} \\
-            --pinning_S ${pin_S} \\
-            --pinning_z ${pin_z} \\
-            --lower_bound ${bounds} \\
-            --isLight ${isLight} \\
-            --isSICILIAN ${isSICILIAN} \\
-            --grouping_level_2 ${grouping_level_2} \\
-            --grouping_level_1 ${grouping_level_1} \\
-            --outname_pq ${outname_pq} \\
-            --outname_tsv ${outname_tsv} \\
-            --outname_log ${outname_log} \\
-            --convert_parquet
-        """
-    if (convert_parquet == false):
-        """
-        calc_splizvd.py \\
-            --input ${input} \\
-            --pinning_S ${pin_S} \\
-            --pinning_z ${pin_z} \\
-            --lower_bound ${bounds} \\
-            --isLight ${isLight} \\
-            --isSICILIAN ${isSICILIAN} \\
-            --grouping_level_2 ${grouping_level_2} \\
-            --grouping_level_1 ${grouping_level_1} \\
-            --outname_pq ${outname_pq} \\
-            --outname_tsv ${outname_tsv} \\
-            --outname_log ${outname_log}
-        """
+    
+    """
+    calc_splizvd.py \\
+        --input ${input} \\
+        --pinning_S ${pin_S} \\
+        --pinning_z ${pin_z} \\
+        --lower_bound ${bounds} \\
+        --isLight ${isLight} \\
+        --isSICILIAN ${isSICILIAN} \\
+        --grouping_level_2 ${grouping_level_2} \\
+        --grouping_level_1 ${grouping_level_1} \\
+        --outname_pq ${outname_pq} \\
+        --outname_tsv ${outname_tsv} \\
+        --outname_log ${outname_log} \\
+        --convert_parquet
+    """
 
 } 

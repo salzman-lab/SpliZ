@@ -7,6 +7,7 @@ import pandas as pd
 import warnings
 import logging
 from scipy import linalg
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -24,7 +25,6 @@ def get_args():
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output file")  
   parser.add_argument("--outname_log", help="Name of log file")
-  parser.add_argument("--convert_parquet", action="store_true", help="if the file needs to be read as parquet")
   args = parser.parse_args()
   return args
 
@@ -137,7 +137,9 @@ def main():
 
   logging.info("Begin reading in file")
 
-  if args.convert_parquet:
+  filename, file_extension = os.path.splitext(args.input)
+
+  if file_extension == '.pq':
     df = pd.read_parquet(args.input)
   else:
     df = pd.read_csv(args.input, sep="\t")

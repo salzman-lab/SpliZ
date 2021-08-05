@@ -22,12 +22,6 @@ workflow PREPROCESS {
         } else { 
             // Initalize input channel
             ch_input = Channel.fromPath(params.input_file)
-            
-            if (input_file.extension == "tsv" || input_file.extension == "txt") {
-                convert_parquet = true
-            } else if (input_file.extension == "pq") {
-                convert_parquet = false  
-            }
         }
 
     // Prepare inputs from non-SICILIAN bam files
@@ -93,6 +87,5 @@ workflow PREPROCESS {
 
     emit:
     input               = ch_input
-    convert_parquet     = convert_parquet
 
 }

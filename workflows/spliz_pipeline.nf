@@ -36,8 +36,7 @@ workflow SPLIZ_PIPELINE {
 
     
     SPLIZ (
-        PREPROCESS.out.input,
-        PREPROCESS.out.convert_parquet
+        PREPROCESS.out.input
     )
     
     if (params.run_analysis) {
