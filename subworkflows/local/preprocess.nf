@@ -26,49 +26,19 @@ workflow PREPROCESS {
 
     // Prepare inputs from non-SICILIAN bam files
     } else {
-        // Initialize bam channel for bams stored in one directory
-        if (params.bam_dir) {
-            ch_bam = Channel.fromPath("${params.bam_dir}/*.bam")
-                .map { it ->
-                    tuple( 
-                        it.baseName, 
-                        it 
-                    )
-                }
-        } 
-
         // Initialize bam channel for bams specified in samplesheet
-        if (params.bam_samplesheet) {
+        if (params.samplesheet) {
             // Initialize bam channel for 10X bams specified in samplesheet
-            if (params.libraryType == "10X") {
-                ch_bam = Channel.fromPath(params.bam_samplesheet)
-                    .splitCsv(header:false)
-                    .map { row ->
-                        tuple( 
-                            row[0],         // bam file sample_ID
-                            file(row[1])    // bam file R1 path 
-                        )
-                    }   
-            // Initialize bam channel for SS2 bams specified in samplesheet       
-            } else if (params.libraryType == "SS2") {
-                ch_bam = Channel.fromPath(params.bam_samplesheet)
-                    .splitCsv(header:true)
-                    .map { row ->
-                        tuple( 
-                            row[0],         // bam file sample_ID
-                            file(row[1]),   // bam file R1 path 
-                            file(row[2])    // bam file R2 path
-                        )
-                    }       
-            }
-        }
-
-        // Must provide either samplesheet or dir
-        if (params.bam_samplesheet && params.bam_dir) {
-            exit 1, "Only provide either bam_samplesheet or bam_dir, not both."
-        }
-        if (!params.bam_samplesheet && !params.bam_dir) {
-            exit 1, "Must provide either bam_samplesheet or bam_dir."
+            ch_bam = Channel.fromPath(params.samplesheet)
+                .splitCsv(header:false)
+                .map { row ->
+                    tuple( 
+                        row[0],         // bam file sample_ID
+                        file(row[1])    // bam file path 
+                    )
+                }   
+        } else {
+            exit 1, "No samplesheet provided."
         }
 
         // Check that bam channel is not empty
@@ -82,10 +52,10 @@ workflow PREPROCESS {
         )
 
         // Initialize parquet channel for non-SICILIAN bam files
-        ch_pq = CONVERT_BAM.out.pq
+        ch_input = CONVERT_BAM.out.tsv
     }
 
     emit:
-    input               = ch_input
+    input   = ch_input
 
 }
