@@ -4,6 +4,10 @@ include { CONVERT_BAM       } from './convert_bam'
 workflow PREPROCESS {
 
     main:
+    // Prepare 
+    if (params.input_file) {
+
+    }
 
     // Prepare inputs from SICILIAN output files
     if (params.SICILIAN) {   
