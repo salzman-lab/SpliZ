@@ -32,6 +32,8 @@ workflow ANALYSIS {
     // Step 3: Summarize results
     SUMMARIZE_RESULTS (
         pval_permutations,
+        param_stem, 
+        params.dataname,
         FIND_SPLIZ_SITES.out.first_evec,
         FIND_SPLIZ_SITES.out.second_evec,
         FIND_SPLIZ_SITES.out.third_evec,

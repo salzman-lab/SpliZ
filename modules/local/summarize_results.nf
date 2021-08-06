@@ -10,10 +10,12 @@ process SUMMARIZE_RESULTS {
 
     input:
     path perm_pvals
+    val param_stem
+    val dataname
     path first_evec
     path second_evec
     path third_evec
-    val splizvd
+    path splizvd_tsv
     val grouping_level_2
     val grouping_level_1
 
@@ -22,10 +24,6 @@ process SUMMARIZE_RESULTS {
     path outname_log    , emit: log
 
     script:
-    dataname            = splizvd[0]
-    param_stem          = splizvd[1]
-    splizvd_tsv         = splizvd[2]
-
     outname             = "summary_${dataname}_${grouping_level_2}-${grouping_level_1}_${param_stem}.tsv"
     outname_log         = "summarize_results.log"
 

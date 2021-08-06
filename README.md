@@ -74,7 +74,7 @@ By default, the pipeline currently performs the following:
 
 ### Samplesheets
 
-The samplesheet must be in comma-separated value(CSV) format. The sampleID must be a unique identifier for each bam file entry.
+The samplesheet must be in comma-separated value(CSV) format. The file must be without a header. The sampleID must be a unique identifier for each bam file entry.
 
 Samplesheets must have 2 columns: sampleID and path to the bam file.
 ```

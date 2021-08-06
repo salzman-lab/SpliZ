@@ -102,14 +102,7 @@
                 }
             },
             "required": [
-                "dataname",
-                "input_file",
-                "bounds",
-                "svd_type",
-                "grouping_level_1",
-                "grouping_level_2",
-                "n_perms",
-                "libraryType"
+                "dataname"
             ]
         },
         "max_job_request_options": {
