@@ -7,11 +7,14 @@ workflow ANALYSIS {
     splizvd_geneMats
     splizvd_tsv
     splizvd_pq
+    param_stem
 
     main:
     // Step 1: Calculate variance adjusted permutations
     PVAL_PERMUTATIONS (
         splizvd_pq,
+        param_stem,
+        params.dataname,
         params.n_perms,
         params.grouping_level_2,
         params.grouping_level_1

@@ -1,6 +1,6 @@
 process PVAL_PERMUTATIONS {
     tag "${params.dataname}"
-    //label 'process_high'
+
     publishDir "${params.outdir}/variance_adjusted_permutations",  
         mode: "copy", 
         pattern: "*.tsv"
@@ -9,7 +9,9 @@ process PVAL_PERMUTATIONS {
         pattern: '*.log'
 
     input:
-    val splizvd
+    val splizvd_pq
+    val param_stem
+    val dataname
     val n_perms
     val grouping_level_2
     val grouping_level_1
@@ -20,10 +22,6 @@ process PVAL_PERMUTATIONS {
     path outname_log            , emit: log
 
     script:
-    dataname                    = splizvd[0]
-    param_stem                  = splizvd[1]
-    splizvd_pq                  = splizvd[2]
-
     outname_all_pvals           = "${dataname}_outdf_${grouping_level_2}-${grouping_level_1}_${n_perms}_${param_stem}.tsv"
     outname_perm_pvals          = "${dataname}_pvals_${grouping_level_2}-${grouping_level_1}_${n_perms}_${param_stem}.tsv"
     outname_log                 = "pval_permutations.log"

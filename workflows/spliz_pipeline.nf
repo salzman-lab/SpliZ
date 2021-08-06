@@ -43,7 +43,8 @@ workflow SPLIZ_PIPELINE {
         ANALYSIS (
             SPLIZ.out.splizvd_geneMats,
             SPLIZ.out.splizvd_tsv,
-            SPLIZ.out.splizvd_pq
+            SPLIZ.out.splizvd_pq,
+            SPLIZ.out.param_stem
         )
     }
 }
