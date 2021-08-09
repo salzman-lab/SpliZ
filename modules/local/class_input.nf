@@ -1,6 +1,5 @@
 process CLASS_INPUT {
     tag "${params.dataname}"
-    label 'process_high_memory'
 
     input:
     val bam
