@@ -148,8 +148,7 @@ def main():
 
   logging.info("Input column check")
 
-  if not SICILIAN:
-    df["called"] = 1
+  df["called"] = 1
   
   base_required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
   passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
