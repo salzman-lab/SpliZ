@@ -49,7 +49,7 @@ workflow PREPROCESS {
                     }
                 convert_bam = true
             } else {
-                exit 1, "Invalid input, non-SICILIAN input must be a bam file."
+                ch_input = Channel.fromPath(params.input_file)
             }
         }
     } else {
