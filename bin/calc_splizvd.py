@@ -470,8 +470,6 @@ def main():
   
   logging.info("Write out files")
 
-  sub_cols = ["cell","gene","tissue","compartment","scZ","n.g_Start","n.g_End","svd_z0","svd_z1","svd_z2"] 
-
   df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
   df.to_parquet(args.outname_pq)
 
