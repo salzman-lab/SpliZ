@@ -112,10 +112,37 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
   set_req = set(required_cols)
   set_df = set(list(df.columns))
 
+  print(set_req)
+  print(set_df)
+
   if set_df.issuperset(set_req):
     return True, required_cols
   else:
     return False, required_cols
+
+def replace_cluster(cluster):
+  cluster_A_list = [
+    "Cluster4", 
+    "Cluster8", 
+    "Cluster9"]
+  cluster_B_list = [
+    "Cluster1", 
+    "Cluster2", 
+    "Cluster3", 
+    "Cluster5", 
+    "Cluster6",
+    "Cluster7",
+    "Cluster10",
+    "Cluster11",
+    "Cluster12",
+    "Cluster13",
+    "Cluster14"]
+  if cluster in cluster_A_list:
+      return "ClusterA"
+  elif cluster in cluster_B_list:
+      return "ClusterB"
+  else: 
+      return cluster
 
 def main():
   args = get_args()
@@ -140,6 +167,9 @@ def main():
     df = pd.read_parquet(args.input)
   else:
     df = pd.read_csv(args.input, sep="\t")
+
+  df["mapped_cluster"] = df.cluster.apply(lambda x: replace_cluster(x))
+  df.to_csv("mapped_cluster_Ott_ann_splices.tsv", sep="\t", index=False)
   
   logging.info("Finished reading in file")
 
@@ -151,6 +181,7 @@ def main():
   base_required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]
   passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
   if passes_input_check: 
+
     logging.info("Passed input column check")
   else:
     logging.exception("Failed input column check! Exiting")
