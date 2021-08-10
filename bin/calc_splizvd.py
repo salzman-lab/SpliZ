@@ -468,8 +468,10 @@ def main():
   if "ontology" in df.columns:
     sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
   
+  df["chrR1A"] = df["chrR1A"].astype('str')
+
   logging.info("Write out files")
-  df.to_csv("original.out", index=False, sep="\t")
+
   df.drop_duplicates("cell_gene")[sub_cols].to_csv(args.outname_tsv, index=False, sep="\t")
   df.to_parquet(args.outname_pq)
 
