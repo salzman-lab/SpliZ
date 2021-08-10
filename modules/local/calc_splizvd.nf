@@ -43,8 +43,8 @@ process CALC_SPLIZVD {
         --isLight ${isLight} \\
         --isSICILIAN ${isSICILIAN} \\
         --svd_type ${svd_type} \\
-        --grouping_level_2 ${grouping_level_2} \\
         --grouping_level_1 ${grouping_level_1} \\
+        --grouping_level_2 ${grouping_level_2} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log} 

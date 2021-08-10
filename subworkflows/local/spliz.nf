@@ -23,8 +23,8 @@ workflow SPLIZ {
         params.pin_z,
         params.bounds,
         params.svd_type,
-        params.grouping_level_2,
         params.grouping_level_1,
+        params.grouping_level_2,
         isLight,
         isSICILIAN
     )

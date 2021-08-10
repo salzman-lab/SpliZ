@@ -20,8 +20,8 @@ def get_args():
   parser.add_argument("--isLight", help="if included, don't calculate extra columns (saves time)")
   parser.add_argument("--svd_type", help="Method of calculating matrix before SVD")
   parser.add_argument("--isSICILIAN", help="Is SICILIAN input file")
-  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)", default="ontology")
-  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
+  parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)")
+  parser.add_argument("--grouping_level_2", help="column to group the data by (e.g. ontology, compartment, tissue)")
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output file")  
   parser.add_argument("--outname_log", help="Name of log file")
@@ -108,12 +108,9 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
   required_cols.append(grouping_level_2)
   if grouping_level_1.lower() != "dummy":
     required_cols.append(grouping_level_1)
-
+  
   set_req = set(required_cols)
   set_df = set(list(df.columns))
-
-  print(set_req)
-  print(set_df)
 
   if set_df.issuperset(set_req):
     return True, required_cols
