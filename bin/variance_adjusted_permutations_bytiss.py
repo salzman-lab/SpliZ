@@ -81,6 +81,9 @@ def main():
       columns=df_cols
   )
   df = df.drop_duplicates("cell_gene")
+
+  if args.grouping_level_1 == "dummy":
+    df["dummy"] = "null"
   df["tiss_comp"] = df[args.grouping_level_1] + df[args.grouping_level_2]
 
   # subset to ontologies with > 20 cells
