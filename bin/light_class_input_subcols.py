@@ -36,10 +36,16 @@ def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI
     CI_dict["UMI"].append(fill_char)
   CI_dict["id"].append(bam_read.query_name)
   
+  seqname = bam_file.get_reference_name(bam_read.tid)
+
+  # if chromosome is numeric, prepend "chr"
+  if str(seqname).isnumeric():
+    seqname = "chr" + str(seqname)
+
   refName, chrA, geneA, posA, chrB, geneB, posB = readObj_refname(
     strand_dict[bam_read.is_reverse], 
     bam_read.cigarstring, 
-    bam_file.get_reference_name(bam_read.tid), 
+    seqname, 
     bam_read.reference_start + 1, 
     ann, 
     fill_char, 
@@ -204,7 +210,7 @@ def main():
     primary = get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library)
     final_dfs.append(primary)
 
-  pd.concat(final_dfs, axis=0).reset_index(drop=True).to_parquet(args.outname)
+  pd.concat(final_dfs, axis=0).reset_index(drop=True).to_csv(args.outname)
   
   pysam.set_verbosity(save)
 
