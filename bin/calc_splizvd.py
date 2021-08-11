@@ -106,8 +106,7 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
   # Function to check if the input file contains the required columns for processing
 
   required_cols.append(grouping_level_2)
-  if grouping_level_1.lower() != "dummy":
-    required_cols.append(grouping_level_1)
+  required_cols.append(grouping_level_1)
   
   set_req = set(required_cols)
   set_df = set(list(df.columns))
@@ -375,10 +374,7 @@ def main():
         idx = df[(~df["z_Start_{}".format(y)].isna()) & (~df["z_End_{}".format(y)].isna())].index
         df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_Start_{}".format(y)] - df.loc[idx,"z_End_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
 
-  if args.grouping_level_1.lower() == "dummy":
-    df["ontology"] = df[args.grouping_level_2]
-  else:
-    df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
+  df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
   
   df["n.g"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df["scaled_z"] = df["z"] / np.sqrt(df["n.g"])
@@ -388,8 +384,7 @@ def main():
 
   sub_cols = ["cell", "gene", "ontology", "scZ", "n.g_Start", "n.g_End"]
   sub_cols.append(args.grouping_level_2)
-  if args.grouping_level_1.lower() != "dummy":
-    sub_cols.append(args.grouping_level_1)
+  sub_cols.append(args.grouping_level_1)
 
   logging.info("Perform SVD zscore calculation")
 
@@ -466,10 +461,7 @@ def main():
 
   sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] #+ velocity_cols
   if "ontology" in df.columns:
-    if args.grouping_level_1 == "dummy":
-      sub_cols = sub_cols + [args.grouping_level_2, "ontology"]
-    else:
-      sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
+    sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
   
   df["chrR1A"] = df["chrR1A"].astype('str')
 
