@@ -375,7 +375,10 @@ def main():
         idx = df[(~df["z_Start_{}".format(y)].isna()) & (~df["z_End_{}".format(y)].isna())].index
         df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_Start_{}".format(y)] - df.loc[idx,"z_End_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
 
-  df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
+  if args.grouping_level_1.lower() == "dummy":
+    df["ontology"] = df[args.grouping_level_2]
+  else:
+    df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
   
   df["n.g"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df["scaled_z"] = df["z"] / np.sqrt(df["n.g"])
