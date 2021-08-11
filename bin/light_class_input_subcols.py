@@ -36,10 +36,16 @@ def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI
     CI_dict["UMI"].append(fill_char)
   CI_dict["id"].append(bam_read.query_name)
   
+  seqname = bam_file.get_reference_name(bam_read.tid)
+
+  # if chromosome is numeric, prepend "chr"
+  if str(seqname).isnumeric():
+    seqname = "chr" + str(seqname)
+
   refName, chrA, geneA, posA, chrB, geneB, posB = readObj_refname(
     strand_dict[bam_read.is_reverse], 
     bam_read.cigarstring, 
-    bam_file.get_reference_name(bam_read.tid), 
+    seqname, 
     bam_read.reference_start + 1, 
     ann, 
     fill_char, 
