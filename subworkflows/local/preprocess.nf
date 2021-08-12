@@ -14,13 +14,14 @@ workflow PREPROCESS {
             exit 1, "Invalid input, SICILIAN inputs must be provided as input_file."
         } else {
             ch_bam = Channel.fromPath(params.samplesheet)
-                .splitCsv(header:true)
+                .splitCsv(header:false)
                 .map { row ->
                     tuple( 
                         row[0],         // bam file sample_ID
                         file(row[1])    // bam file path 
                     )
-                }   
+                }
+                .view()   
             convert_bam = true
         }
     } else if (params.input_file) {

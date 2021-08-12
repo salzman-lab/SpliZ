@@ -12,7 +12,7 @@ process CLASS_INPUT {
     tuple val(sample_ID), path(outname),    emit: class_input
 
     script:
-    "${sample_ID}.class_input"
+    outname = "${sample_ID}.class_input"
 
     """
     light_class_input_subcols.py \\
