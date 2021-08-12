@@ -210,7 +210,7 @@ def main():
     primary = get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library)
     final_dfs.append(primary)
 
-  pd.concat(final_dfs, axis=0).reset_index(drop=True).to_csv(args.outname)
+  pd.concat(final_dfs, axis=0).reset_index(drop=True).to_parquet(args.outname)
   
   pysam.set_verbosity(save)
 
