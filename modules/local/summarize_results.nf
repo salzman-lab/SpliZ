@@ -8,8 +8,7 @@ process SUMMARIZE_RESULTS {
         mode: 'copy', 
         pattern: '*.log'
 
-    memory '100 GB'
-    time '2h'
+    label 'process_low'
 
     input:
     path perm_pvals

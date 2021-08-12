@@ -10,8 +10,7 @@ process CALC_SPLIZVD {
         mode: 'copy', 
         pattern: '*.log'
 
-    memory '200 GB'
-    time '1h'
+    label 'process_medium'
 
     input:
     path input

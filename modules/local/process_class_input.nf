@@ -1,12 +1,10 @@
 process PROCESS_CLASS_INPUT {
     tag "${params.dataname}"
-    label 'process_high'
     publishDir "${params.outdir}/class_input", 
         mode: 'copy', 
         pattern: '*.pq'
 
-    memory '100 GB'
-    time '1h'
+    label 'process_medium'
 
     input:
     path class_input

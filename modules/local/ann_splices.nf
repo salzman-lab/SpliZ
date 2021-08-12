@@ -1,8 +1,7 @@
 process ANN_SPLICES {
     tag "${params.dataname}"
 
-    memory '800 GB'
-    time '1h'
+    label 'process_low'
 
     input:
     path pq

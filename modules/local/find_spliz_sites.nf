@@ -8,8 +8,7 @@ process FIND_SPLIZ_SITES {
         mode: 'copy', 
         pattern: '*.log'
     
-    memory '100 GB'
-    time '1h'
+    label 'process_medium'
 
     input:
     path ch_geneMats

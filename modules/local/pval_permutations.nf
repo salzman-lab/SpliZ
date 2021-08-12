@@ -8,8 +8,7 @@ process PVAL_PERMUTATIONS {
         mode: 'copy', 
         pattern: '*.log'
     
-    memory '100 GB'
-    time '1h'
+    label 'process_medium'
 
     input:
     val splizvd_pq
