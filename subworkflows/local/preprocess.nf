@@ -14,7 +14,7 @@ workflow PREPROCESS {
             exit 1, "Invalid input, SICILIAN inputs must be provided as input_file."
         } else {
             ch_bam = Channel.fromPath(params.samplesheet)
-                .splitCsv(header:false)
+                .splitCsv(header:true)
                 .map { row ->
                     tuple( 
                         row[0],         // bam file sample_ID
