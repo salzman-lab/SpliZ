@@ -7,6 +7,9 @@ process FIND_SPLIZ_SITES {
     publishDir "${params.outdir}/logs", 
         mode: 'copy', 
         pattern: '*.log'
+    
+    memory '100 GB'
+    time '1h'
 
     input:
     path ch_geneMats

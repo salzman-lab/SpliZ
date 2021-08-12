@@ -5,6 +5,9 @@ process PROCESS_CLASS_INPUT {
         mode: 'copy', 
         pattern: '*.pq'
 
+    memory '100 GB'
+    time '1h'
+
     input:
     path class_input
     val dataname

@@ -9,7 +9,10 @@ process CALC_SPLIZVD {
     publishDir "${params.outdir}/logs", 
         mode: 'copy', 
         pattern: '*.log'
-    memory '200GB'
+
+    memory '200 GB'
+    time '1h'
+
     input:
     path input
     val param_stem

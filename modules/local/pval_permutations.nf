@@ -7,6 +7,9 @@ process PVAL_PERMUTATIONS {
     publishDir "${params.outdir}/logs", 
         mode: 'copy', 
         pattern: '*.log'
+    
+    memory '100 GB'
+    time '1h'
 
     input:
     val splizvd_pq

@@ -1,6 +1,7 @@
 process CLASS_INPUT {
     tag "${params.dataname}"
-    memory '400 GB'
+    memory '600 GB'
+    time '2h'
 
     input:
     val bam

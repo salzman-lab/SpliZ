@@ -8,6 +8,9 @@ process SUMMARIZE_RESULTS {
         mode: 'copy', 
         pattern: '*.log'
 
+    memory '100 GB'
+    time '2h'
+
     input:
     path perm_pvals
     val param_stem
