@@ -7,7 +7,6 @@
 
 library(data.table)
 library(Rfast)
-library(logr)
 
 args <- commandArgs(trailingOnly = TRUE)
 p_value_file = args[1]
@@ -16,18 +15,12 @@ second_evec_file = args[3]
 third_evec_file = args[4]
 outname_log = args[5]
 
-tmp <- file.path(outname_log)
-lf <- log_open(tmp, show_notes=FALSE, logdir=FALSE)
-
-log_print("Starting", hide_notes=TRUE)
 p_value = fread(p_value_file,sep="\t",header=TRUE)
 
 ## I want to select the top 20 and top 50 genes with FDR < 0.05
 p_value = p_value[perm_pval_adj_svd_z0<0.05]
 
 topgenes = unique(p_value$gene)
-
-log_print("First eigen vector", hide_notes=TRUE)
 
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()
@@ -71,8 +64,6 @@ write.table(to_plot, first_evec_file, sep = "\t", row.names = FALSE, quote = FAL
 #### second eigen vector #####
 ##############################
 
-log_print("Second eigen vector", hide_notes=TRUE)
-
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()
 let_to_plot = c()
@@ -115,7 +106,6 @@ write.table(to_plot, second_evec_file, sep = "\t", row.names = FALSE, quote = FA
 ##############################
 #### third eigen vector #####
 ##############################
-log_print("Third eigen vector", hide_notes=TRUE)
 
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()
@@ -152,6 +142,3 @@ to_plot = data.table(gene_to_plot,let_to_plot,coordinate_to_plot)
 names(to_plot) = c("gene","let","end")
 
 write.table(to_plot, third_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
-
-log_close()
-writeLines(readLines(lf))
