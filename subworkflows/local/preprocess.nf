@@ -20,7 +20,8 @@ workflow PREPROCESS {
                         row[0],         // bam file sample_ID
                         file(row[1])    // bam file path 
                     )
-                }   
+                }
+                .view()   
             convert_bam = true
         }
     } else if (params.input_file) {
