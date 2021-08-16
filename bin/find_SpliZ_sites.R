@@ -13,7 +13,6 @@ p_value_file = args[1]
 first_evec_file = args[2]
 second_evec_file = args[3]
 third_evec_file = args[4]
-outname_log = args[5]
 
 p_value = fread(p_value_file,sep="\t",header=TRUE)
 
