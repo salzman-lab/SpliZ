@@ -128,22 +128,16 @@ def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded
 
         # make sure read is mapped
         if not bam_read.is_unmapped:
-          if (i == 0) or (not bam_read.is_secondary and bam_read.query_name in read_ids):
-            # it's a chimeric alignment and we need another line from it
-            if bam_read.has_tag("ch") and not first:
-                  prev_read = bam_read
-                  first = True
-            else:
-  
-              # add info from chimeric read
-              if bam_read.has_tag("ch"):
-                count += 1
-  
-                # note: removing chim for this test ONLY; uncomment after
-                first = False
+
+          # For the first BAM, only include primary alignments
+          # for second bam, only include primary alignment corresponding to read found in first BAM
+          if ((i == 0) and (not bam_read.is_secondary)) or (not bam_read.is_secondary and bam_read.query_name in read_ids):
+
+            # do not include chimeric alignments
+            if not bam_read.has_tag("ch"):
   
               # add info from align read
-              elif "N" in bam_read.cigarstring:
+              if "N" in bam_read.cigarstring:
                 count += 1
                 CI_dict = extract_info_align(cellranger, CI_dict, bam_read, suffix, alignFile, ann, UMI_bar, stranded_library)
   
