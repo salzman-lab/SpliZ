@@ -196,7 +196,7 @@ def main():
 
   if args.libraryType == '10X':
     UMI_bar = True
-    stranded_library = True
+    stranded_library = False
     cellranger = True
 
   elif args.libraryType == 'SS2':
