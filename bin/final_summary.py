@@ -68,7 +68,7 @@ def main():
   
           out_dict["{}_median".format(z_col)].append(ont_df[z_col].median())
           try:
-            pval = pval_df[(pval_df["gene"] == gene) & (pval_df["grouping_level_1"] == tiss)]["perm_pval_adj_{}".format(z_col)].iloc[0]
+            pval = pval_df[(pval_df["gene"] == gene) & ((pval_df["grouping_level_1"] == tiss) | (pval_df["grouping_level_1"].isna()))]["perm_pval_adj_{}".format(z_col)].iloc[0]
           except:
             pval = np.nan
           out_dict["{}_pval".format(z_col)].append(pval)
