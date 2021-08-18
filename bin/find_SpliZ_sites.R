@@ -17,7 +17,7 @@ third_evec_file = args[4]
 p_value = fread(p_value_file,sep="\t",header=TRUE)
 
 ## I want to select the top 20 and top 50 genes with FDR < 0.05
-p_value = p_value[perm_pval_adj_svd_z0<0.05]
+##p_value = p_value[perm_pval_adj_svd_z0<0.05]
 
 topgenes = unique(p_value$gene)
 
