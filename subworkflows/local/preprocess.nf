@@ -13,16 +13,28 @@ workflow PREPROCESS {
         if (params.SICILIAN) {
             exit 1, "Invalid input, SICILIAN inputs must be provided as input_file."
         } else {
-            ch_bam = Channel.fromPath(params.samplesheet)
-                .splitCsv(header:false)
-                .map { row ->
-                    tuple( 
-                        row[0],         // bam file sample_ID
-                        file(row[1])    // bam file path 
-                    )
-                }
-                .view()   
-            convert_bam = true
+            if (params.libraryType == '10X') {
+                ch_bam = Channel.fromPath(params.samplesheet)
+                    .splitCsv(header:false)
+                    .map { row ->
+                        tuple( 
+                            row[0],         // bam file sample_ID
+                            file(row[1])    // bam file path 
+                        )
+                    }
+                convert_bam = true
+            } else if (params.libraryType == 'SS2') {
+                ch_bam = Channel.fromPath(params.samplesheet)
+                    .splitCsv(header:false)
+                    .map { row ->
+                        tuple( 
+                            row[0],         // bam file sample_ID
+                            file(row[1]),   // R1 bam file path 
+                            file(row[2])    // R2 bam file path    
+                        )
+                    }
+                convert_bam = true
+            }
         }
     } else if (params.input_file) {
         input_file = file(params.input_file)

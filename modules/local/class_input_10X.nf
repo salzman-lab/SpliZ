@@ -1,4 +1,4 @@
-process CLASS_INPUT {
+process CLASS_INPUT_10X {
     tag "${params.dataname}"
     
     label 'process_high'
