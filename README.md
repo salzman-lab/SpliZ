@@ -63,7 +63,6 @@ By default, the pipeline currently performs the following:
 | `run_analysis`        | If the pipeline will perform splice site identifcation and differential splicing analysis | `true`, `false` |
 | `input_file`          | File to be used as SpliZ input | *tumor_5_with_postprocessing.txt* |
 | `SICILIAN`            | If `input_file` is output from [SICILIAN](https://github.com/salzmanlab/SICILIAN) | `true`, `false` |
-| `samplesheet`         | If `SICILIAN` = `false` and input files are in BAM format, this file specifies the locations of the input bam files. Samplesheet formatting is specified below | *Tumor_5_samplesheet.csv* |
 | `pin_S`               | Bound splice site residuals at this quantile (e.g. values in the lower `pin_S` quantile and the upper 1 - `pin_S` quantile will be rounded to the quantile limits) | 0.1 |
 | `pin_z`               | Bound SpliZ scores at this quantile (e.g. values in the lower `pin_z` quantile and the upper 1 - `pin_z` quantile will be rounded to the quantile limits) | 0 |  
 | `bounds`              | Only include cell/gene pairs that have more than this many junctional reads for the gene | 5 |
@@ -74,9 +73,10 @@ By default, the pipeline currently performs the following:
 | `grouping_level_2`    | Metadata column by which the partitioned data is grouped | "compartment" |
 | `libraryType`         | Library prepration method of the input data | `10X`, `SS2` |
 
-## Optional Parameters for non-SICILIAN Inputs
+## Optional Parameters for non-SICILIAN Inputs (`SICILIAN` = `false`)
 | Argument              | Description       |Example Usage  |
 | --------------------- | ---------------- |-----------|
+| `samplesheet`         | If input files are in BAM format, this file specifies the locations of the input bam files. Samplesheet formatting is specified below. | *Tumor_5_samplesheet.csv* |
 | `annotator_pickle`    | [Genome-specific annotation file for gene names](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq.pkl* |
 | `exon_pickle`         | [Genome-specific annotation file for exon boundaries](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_exon_bounds.pkl* |
 | `splice_pickle`       | [Genome-specific annotation file for splice sites](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_splices.pkl* |
