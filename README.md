@@ -90,27 +90,14 @@ Tumor_5_S2,tumor_5_S1_L002.bam
 Tumor_5_S3,tumor_5_S3_L002.bam
 ```
 
-
-## Documentation
-
-The nf-core/spliz pipeline comes with documentation about the pipeline: [usage](https://nf-co.re/spliz/usage) and [output](https://nf-co.re/spliz/output).
-
-<!-- TODO nf-core: Add a brief overview of what the pipeline does and how it works -->
-
 ## Credits
 
-nf-core/spliz was originally written by Salzman Lab.
-
-We thank the following people for their extensive assistance in the development
-of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+salzmanlab/spliz was originally written by Salzman Lab.
 
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
-For further information or help, don't hesitate to get in touch on the [Slack `#spliz` channel](https://nfcore.slack.com/channels/spliz) (you can join with [this invite](https://nf-co.re/join/slack)).
 
 ## Citations
 
