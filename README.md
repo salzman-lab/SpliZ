@@ -19,24 +19,31 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Quick Start
 
-1. Install [`nextflow`](https://nf-co.re/usage/installation) (`>=20.04.0`)
+1. Install [`nextflow`](https://nf-co.re/usage/installation) (`>=20.04.0`) and [`conda`](https://docs.conda.io/en/latest/).
 
-2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
-
-3. Download the pipeline and test it on a minimal dataset with a single command:
-
+2. Download environment file.
     ```bash
-    nextflow run nf-core/spliz -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+    wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/environment.yml
     ```
 
-    > Please check [nf-core/configs](https://github.com/nf-core/configs#documentation) to see if a custom config file to run nf-core pipelines already exists for your Institute. If so, you can simply use `-profile <institute>` in your command. This will enable either `docker` or `singularity` and set the appropriate execution settings for your local compute environment.
-
-4. Start running your own analysis!
-
-    <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
-
+3. Create conda environment and activate.
     ```bash
-    nextflow run nf-core/spliz -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input '*_R{1,2}.fastq.gz' --genome GRCh37
+    conda env create --name spliz_env --file=environment.yml
+    conda activate spliz_env
+    ```
+
+4. To run on the test data set, download the config file and data set.
+    ```bash
+    wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/small_data/small.config
+    wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/small_data/small.pq
+    ```
+
+5. Run the pipeline on the test data set.
+    ```bash
+    nextflow run salzmanlab/spliz \
+        -r main \
+        -latest \
+        -c small.config
     ```
 
 See [usage docs](https://nf-co.re/spliz/usage) for all of the available options when running the pipeline.
