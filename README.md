@@ -73,6 +73,10 @@ By default, the pipeline currently performs the following:
 | `grouping_level_1`    | Metadata column by which the data is intially partitioned  | "tissue" |
 | `grouping_level_2`    | Metadata column by which the partitioned data is grouped | "compartment" |
 | `libraryType`         | Library prepration method of the input data | `10X`, `SS2` |
+
+## Optional Parameters for non-SICILIAN Inputs
+| Argument              | Description       |Example Usage  |
+| --------------------- | ---------------- |-----------|
 | `annotator_pickle`    | [Genome-specific annotation file for gene names](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq.pkl* |
 | `exon_pickle`         | [Genome-specific annotation file for exon boundaries](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_exon_bounds.pkl* |
 | `splice_pickle`       | [Genome-specific annotation file for splice sites](https://github.com/salzmanlab/SICILIAN#annotator-and-index-files-needed-for-running-sicilian) | *hg38_refseq_splices.pkl* |
