@@ -18,3 +18,4 @@ samplesheets/*
 sandbox*
 *mouse*
 s3*
+!testing_data
