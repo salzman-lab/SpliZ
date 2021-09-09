@@ -1,7 +1,7 @@
 process ANN_SPLICES {
     tag "${params.dataname}"
 
-    label 'process_low'
+    label 'process_medium'
 
     input:
     path pq
