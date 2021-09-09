@@ -189,7 +189,7 @@ def get_loc_flag(row):
     return 1
   if "|sc" in row["refName_ABR1"]:
     return 0
-  r_strand = row["read_strandR1A"]
+  r_strand = row["read_strandR1"]
   if math.isnan(row["juncPosR2A"]):
     return 0
   if "|lin" in row["refName_ABR1"]:
