@@ -105,8 +105,8 @@ def contains_required_cols(df, required_cols, grouping_level_2, grouping_level_1
   
   # Function to check if the input file contains the required columns for processing
 
-  required_cols.append(grouping_level_2)
-  required_cols.append(grouping_level_1)
+  #required_cols.append(grouping_level_2)
+  #required_cols.append(grouping_level_1)
   
   set_req = set(required_cols)
   set_df = set(list(df.columns))
