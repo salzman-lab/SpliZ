@@ -150,13 +150,16 @@ def main():
   if args.grouping_level_1 == "dummy":
     df["dummy"] = "null"
 
-  base_required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "chrR1A", "called"]
-  passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
-  if passes_input_check: 
-    logging.info("Passed input column check")
-  else:
-    logging.exception("Failed input column check! Exiting")
-    sys.exit(1)
+  required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "chrR1A", "called"]
+  #passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
+  #if passes_input_check: 
+  #  logging.info("Passed input column check")
+  #else:
+  #  logging.exception("Failed input column check! Exiting")
+  #  sys.exit(1)
+
+  required_cols.append(args.grouping_level_2)
+  required_cols.append(args.grouping_level_1)
 
   df = df[required_cols]
 
