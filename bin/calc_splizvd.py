@@ -144,7 +144,7 @@ def main():
 
   logging.info("Input column check")
 
-  if not SICILIAN:
+  if SICILIAN != True:
     df["called"] = 1
   
   if args.grouping_level_1 == "dummy":
