@@ -337,7 +337,7 @@ def box(
           response = dot_plot(tiss_df, let, let_dict, palette,onts, gene, don, tiss, dataname, rev_dict, domains,gtf, alpha, suff, grouping_level_2, rankLabel)
           if type(response) != int:
             print("ERROR")
-  return temp
+            return response
 
 def main():
   args = get_args()
@@ -441,10 +441,9 @@ def main():
         gene_df["avg_rank"] = gene_df["num"]/gene_df["denom"]
         print("gene size 2",gene_df.shape)
   
-        temp = box(gene_df, let, cell_lim, gene, args.dataname, let_dict, palette, rev_dict, domains, gtf, alpha, comp_sort, suff, args.grouping_level_1, args.grouping_level_2,rankLabel)
-        print(temp["ontology"].nunique())
+        box(gene_df, let, cell_lim, gene, args.dataname, let_dict, palette, rev_dict, domains, gtf, alpha, comp_sort, suff, args.grouping_level_1, args.grouping_level_2,rankLabel)
         
-        rank += 1
+      rank += 1
 
 main()
   
