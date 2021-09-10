@@ -78,7 +78,7 @@ def main():
   out_df.to_csv(args.outname, sep="\t", index=False)
 
   subset_df = out_df.dropna(subset=['SpliZsites']).sort_values(by='scZ_pval').reset_index()
-  genes =  subset_df[['gene']].drop_duplicates().head(args.numGenes).reset_index()
+  genes =  subset_df[['gene']].drop_duplicates().head(int(args.numGenes)).reset_index()
 
   first_evec = pd.read_csv(args.first_evec, sep='\t')
   subset_first_evec = genes.merge(first_evec, on='gene')
