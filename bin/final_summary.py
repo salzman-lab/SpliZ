@@ -16,7 +16,8 @@ def get_args():
   parser.add_argument("--grouping_level_1", help="subset data by this column before checking for differences (e.g. tissue, compartment)", default="dummy")
   parser.add_argument("--outname", help="Name of output file")
   parser.add_argument("--outname_log", help="Name of log file")
-
+  parser.add_argument("--numGenes")
+  parser.add_argument("--dataname")
   args = parser.parse_args()
   return args
 
@@ -75,6 +76,15 @@ def main():
   out_df = pd.DataFrame.from_dict(out_dict)
   out_df = out_df.sort_values(["gene","grouping_level_1","scZ_median"])
   out_df.to_csv(args.outname, sep="\t", index=False)
+
+  subset_df = out_df.dropna(subset=['SpliZsites']).sort_values(by='scZ_pval').reset_index()
+  genes =  subset_df[['gene']].drop_duplicates().head(args.numGenes).reset_index()
+
+  first_evec = pd.read_csv(args.first_evec, sep='\t')
+  subset_first_evec = genes.merge(first_evec, on='gene')
+
+  plotterFile_name = args.dataname + ".plotterFile"
+  subset_first_evec.to_csv(plotterFile_name, index=False, sep='\t')
 
   logging.info("Completed")
 

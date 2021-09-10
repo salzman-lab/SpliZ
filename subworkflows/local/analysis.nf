@@ -1,6 +1,8 @@
 include { PVAL_PERMUTATIONS     }   from   '../../modules/local/pval_permutations'
 include { FIND_SPLIZ_SITES      }   from   '../../modules/local/find_spliz_sites'
 include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_results'
+include { PLOT                  }   from   '../../modules/local/plot'
+
 
 workflow ANALYSIS {
     take:
@@ -39,6 +41,20 @@ workflow ANALYSIS {
         FIND_SPLIZ_SITES.out.third_evec,
         splizvd_tsv,
         params.grouping_level_2,
-        params.grouping_level_1
+        params.grouping_level_1,
+        params.dataname, 
+        params.numGenes
     )
+
+    // Step 4: Plot
+    PLOT (
+        SUMMARIZE_RESULTS.out.plotterFile,
+        splizvd_pq,
+        params.domain,
+        params.gtf,
+        params.dataname, 
+        params.grouping_level_1,
+        params.grouping_level_2
+    )
+
 }

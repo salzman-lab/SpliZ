@@ -20,10 +20,13 @@ process SUMMARIZE_RESULTS {
     path splizvd_tsv
     val grouping_level_2
     val grouping_level_1
+    val dataname
+    val numGenes
 
     output:
-    path outname        , emit: summary
-    path outname_log    , emit: log
+    path outname            , emit: summary
+    path outname_log        , emit: log
+    path '*plotterFile'     , emit: plotterFile
 
     script:
     outname             = "summary_${dataname}_${grouping_level_2}-${grouping_level_1}_${param_stem}.tsv"
@@ -39,6 +42,8 @@ process SUMMARIZE_RESULTS {
         --grouping_level_2 ${grouping_level_2} \\
         --grouping_level_1 ${grouping_level_1} \\
         --outname ${outname} \\
-        --outname_log ${outname_log}
+        --outname_log ${outname_log} \\
+        --dataname ${dataname} \\
+        --numGenes ${numGenes}
     """
 }
