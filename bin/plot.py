@@ -404,7 +404,7 @@ def main():
 
   genes = list(pos_dict.keys())
 
-  rank = 0
+  rank = 1
   for gene in tqdm(genes):
 
       print("gene",gene)
