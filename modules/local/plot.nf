@@ -26,7 +26,7 @@ process PLOT {
     """
     plot.py \\
         --plotterFile ${plotterFile} \\
-        --svd ${svd} \\
+        --svd ${splizvd_pq} \\
         --domain ${domain} \\
         --gtf ${gtf} \\
         --dataname ${dataname} \\
