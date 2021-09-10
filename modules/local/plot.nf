@@ -28,7 +28,7 @@ process PLOT {
         --plotterFile ${plotterFile} \\
         --svd ${splizvd_pq} \\
         --domain ${domain} \\
-        --gtf ${gtf} \\
+        --gtf_file ${gtf} \\
         --dataname ${dataname} \\
         --grouping_level_1 ${grouping_level_1} \\
         --grouping_level_2 ${grouping_level_2}

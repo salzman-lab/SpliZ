@@ -159,8 +159,8 @@ def get_args():
   parser = argparse.ArgumentParser(description="make box plots for each donor and acceptor")
   parser.add_argument("--dataname",help="name of dataset to use")
   parser.add_argument("--plotterFile",help="file of parameters to make plots for")
-  parser.add_argument("--in_file",help="Input file")
-  parser.add_argument("--domain_file",help="Domain file")  
+  parser.add_argument("--svd",help="Input file")
+  parser.add_argument("--domain",help="Domain file")  
   parser.add_argument("--gtf_file",help="GTF file")
   parser.add_argument("--grouping_level_1")
   parser.add_argument("--grouping_level_2")
@@ -342,9 +342,9 @@ def box(
 def main():
   args = get_args()
 
-  df = pd.read_parquet(args.in_file)
+  df = pd.read_parquet(args.svd)
 
-  domains = pd.read_csv(args.domain_file, sep="\t", header=None)
+  domains = pd.read_csv(args.domain, sep="\t", header=None)
   gtf = load_gtf(args.gtf_file, True)
 
   # only include ontology/gene pairs with at least 20 cells
