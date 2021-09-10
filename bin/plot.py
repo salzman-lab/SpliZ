@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 from collections import defaultdict
 import matplotlib
