@@ -2,10 +2,10 @@ process PLOT {
     tag "${params.dataname}"
     publishDir "${params.outdir}/plots/dotplots",  
         mode: "copy", 
-        pattern: "*.dotplot.png"
+        pattern: "*dotplot.png"
     publishDir "${params.outdir}/plots/boxplots",  
         mode: "copy", 
-        pattern: "*.boxplot.png"
+        pattern: "*boxplot.png"
 
     label 'process_medium'
 
