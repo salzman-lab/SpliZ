@@ -2,10 +2,10 @@ process PLOT {
     tag "${params.dataname}"
     publishDir "${params.outdir}/plots/dotplots",  
         mode: "copy", 
-        pattern: "*.dotplot"
+        pattern: "*.dotplot.png"
     publishDir "${params.outdir}/plots/boxplots",  
         mode: "copy", 
-        pattern: "*.boxplot"
+        pattern: "*.boxplot.png"
 
     label 'process_medium'
 
@@ -19,8 +19,8 @@ process PLOT {
     val grouping_level_2
 
     output:
-    path '*dotplot'     , emit: dotplot   
-    path '*boxplot'     , emit: boxplot                                  
+    path '*dotplot.png'     , emit: dotplot   
+    path '*boxplot.png'     , emit: boxplot                                  
                                
     script:
     """

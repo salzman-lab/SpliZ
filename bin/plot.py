@@ -202,7 +202,7 @@ def dot_plot(don_df, let, let_dict, palette, onts, gene, don, tiss, dataname, re
 
   plt.yticks(range(1,don_df["ontology"].nunique() + 1),onts)
   plt.title("{}\n{} {} {} {}".format(dataname,gene,tiss, don, let_dict[rev_dict[let]]))
-  plt.savefig("{}_{}_{}_{}_{}_{}_dot{}.dotplot".format(rankLabel, gene, don, tiss, dataname, let_dict[rev_dict[let]],suff),bbox_inches="tight")
+  plt.savefig("{}_{}_{}_{}_{}_{}_dot{}_dotplot.png".format(rankLabel, gene, don, tiss, dataname, let_dict[rev_dict[let]],suff),bbox_inches="tight")
   plt.close()
   return 0
 
@@ -282,7 +282,7 @@ def plot_df(df, let, cell_lim, gene, dataname, let_dict, palette, rev_dict, don,
         plt.scatter([medians[i]],[i],color = "k",s=20,zorder=100)
       plt.title("{}\n{} {} {} {}\nmean: {:0.2f} median: {:0.2f}".format(dataname,gene,tiss, don, let_dict[rev_dict[let]], don_df["avg_rank"].mean(), don_df["avg_rank"].median()))
       plt.legend(bbox_to_anchor=(1.5, 1.05))
-      plt.savefig("{}_{}_{}_{}_{}_{}{}.boxplot".format(rankLabel, gene, don, tiss, dataname, let_dict[rev_dict[let]],suff),bbox_inches="tight")
+      plt.savefig("{}_{}_{}_{}_{}_{}{}_boxplot.png".format(rankLabel, gene, don, tiss, dataname, let_dict[rev_dict[let]],suff),bbox_inches="tight")
       plt.close()
       return df
 
