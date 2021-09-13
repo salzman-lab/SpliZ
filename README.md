@@ -39,6 +39,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     ```
 
 5. Run the pipeline on the test data set.
+Note: You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/executor.html) in the config file, in accordance to your compute needs.
     ```bash
     nextflow run salzmanlab/spliz \
         -r main \
@@ -87,11 +88,18 @@ By default, the pipeline currently performs the following:
 
 The samplesheet must be in comma-separated value(CSV) format. The file must be without a header. The sampleID must be a unique identifier for each bam file entry.
 
-Samplesheets must have 2 columns: sampleID and path to the bam file.
+For 10X samples, amplesheets must have 2 columns: sampleID and path to the bam file.
 ```
 Tumor_5_S1,tumor_5_S1_L001.bam
-Tumor_5_S2,tumor_5_S1_L002.bam
-Tumor_5_S3,tumor_5_S3_L002.bam
+Tumor_5_S2,tumor_5_S2_L002.bam
+Tumor_5_S3,tumor_5_S3_L003.bam
+```
+
+For SS2 samples, amplesheets must have 3 columns: sampleID, read 1 bam file, and read 2 bam file.
+```
+Tumor_5_S1,tumor_5_S1_L001_R1.bam,tumor_5_S1_L001_R2.bam
+Tumor_5_S2,tumor_5_S2_L002_R1.bam,tumor_5_S2_L002_R2.bam
+Tumor_5_S3,tumor_5_S3_L003_R1.bam,tumor_5_S3_L003_R2.bam
 ```
 
 ## Credits
