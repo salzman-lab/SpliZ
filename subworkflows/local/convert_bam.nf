@@ -35,6 +35,8 @@ workflow CONVERT_BAM {
         }
         .set { ch_class_input }
     
+    ch_class_input.view()
+    
     PROCESS_CLASS_INPUT (
         ch_class_input,
         params.dataname,
