@@ -38,10 +38,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/small_data/small.pq
     ```
 
-5. Run the pipeline on the test data set.
-
-Note: You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/executor.html) in the config file, in accordance to your compute needs.
-
+5. Run the pipeline on the test data set. You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/executor.html) in the config file, in accordance to your compute needs.
     ```bash
     nextflow run salzmanlab/spliz \
         -r main \
