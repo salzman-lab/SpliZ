@@ -28,7 +28,7 @@ process CALC_SPLIZVD {
     output:
     path outname_pq     , emit: pq
     path outname_tsv    , emit: tsv                                 
-    path "*.geneMat"    , emit: geneMats
+    path "*.geneMat"    , optional: true, emit: geneMats
     path "*.log"        , emit: log                                    
 
     script:
