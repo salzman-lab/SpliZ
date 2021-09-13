@@ -18,16 +18,16 @@ workflow CONVERT_BAM {
             params.gtf
         )
         ch_light_class_input = CLASS_INPUT_10X.out.class_input
-   } else if (params.libraryType == 'SS2') {
-       CLASS_INPUT_SS2 (
-            ch_bam,
-            params.dataname,
-            params.libraryType,
-            params.annotator_pickle,
-            params.gtf
-        )
-        ch_light_class_input = CLASS_INPUT_SS2.out.class_input
-   }
+    } else if (params.libraryType == 'SS2') {
+        CLASS_INPUT_SS2 (
+                ch_bam,
+                params.dataname,
+                params.libraryType,
+                params.annotator_pickle,
+                params.gtf
+            )
+            ch_light_class_input = CLASS_INPUT_SS2.out.class_input
+    }
 
     ch_light_class_input
         .collectFile(newLine: true) { files ->

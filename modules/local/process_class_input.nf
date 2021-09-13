@@ -1,5 +1,5 @@
 process PROCESS_CLASS_INPUT {
-    tag "${params.dataname}"
+
     publishDir "${params.outdir}/class_input", 
         mode: 'copy', 
         pattern: '*.pq'
