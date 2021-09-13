@@ -9,6 +9,7 @@ def get_args():
   parser.add_argument("--input_file", help="Metadata file")
   parser.add_argument("--meta", help="Metadata file")
   parser.add_argument("--outname", help="Output file name")
+  parser.add_argument("--libraryType")
 
   args = parser.parse_args()
   return args
@@ -40,11 +41,14 @@ def main():
     # deduplicate by cell + junction
     df = df.drop_duplicates(["refName_ABR1","barcode"])
 
-    # clean up barcode column 
-    df["barcode"] = df["barcode"].str.rstrip("-1")
-
-    # label cell
-    df["cell_id"] = sample_ID + "_" + df["barcode"].astype(str)
+    # clean up barcode column
+  
+    if args.libraryType == '10X':
+      df["barcode"] = df["barcode"].str.rstrip("-1")
+      df["cell_id"] = sample_ID + "_" + df["barcode"].astype(str)
+    elif args.libraryType == 'SS2':
+      df['id'] = df['id'].str.split('.').str[0]
+      df["cell_id"] = df["id"].astype(str)
   
     dfs.append(df)
 
@@ -54,7 +58,6 @@ def main():
   full_df.rename(columns={"geneR1A" : "geneR1A_uniq", "geneR1B" : "geneR1B_uniq"}, inplace=True)
   
   final_df = full_df[["refName_newR1","geneR1A_uniq","geneR1B_uniq", "juncPosR1A","juncPosR1B","chrR1A","chrR1B","numReads","cell_id"]]
-  #final_df = full_df[["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "called", "chrR1A"]]
 
   meta = pd.read_csv(args.meta, sep="\t") 
   final_df.drop([x for x in final_df.columns if x in meta.columns and x != "cell_id"], inplace=True, axis=1)
@@ -62,7 +65,6 @@ def main():
   merged = final_df.merge(meta, left_on="cell_id", right_on="cell_id", how = "left")
 
   merged.rename(columns={'cell_id': 'cell'}, inplace=True)
-
   merged.to_parquet(args.outname)
 
 

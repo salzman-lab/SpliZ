@@ -162,7 +162,7 @@ def main():
   required_cols.append(args.grouping_level_1)
 
   df = df[required_cols]
-
+  
   logging.info("Rename SICILIAN columns")
 
   cols_dict = {

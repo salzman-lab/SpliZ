@@ -9,6 +9,7 @@ process PROCESS_CLASS_INPUT {
     input:
     path class_input
     val dataname
+    val libraryType
     path meta
 
     output:
@@ -20,6 +21,7 @@ process PROCESS_CLASS_INPUT {
     process_CI.py \\
         --input_file ${class_input} \\
         --meta ${meta} \\
+        --libraryType ${libraryType} \\
         --outname ${outname} 
     """
 }
