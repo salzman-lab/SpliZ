@@ -438,26 +438,29 @@ def main():
     # mean-normalize the rows
     gene_mat = gene_mat.subtract(gene_mat.mean(axis=1),axis=0)
     
-    # calculate svd
-    u, s, vh = linalg.svd(gene_mat,check_finite=False,full_matrices=False)
+    try:
+      # calculate svd
+      u, s, vh = linalg.svd(gene_mat,check_finite=False,full_matrices=False)
+      
+      if len(s) >= k:
+        # calculate new z scores based on svd
+        new_zs = gene_mat.dot(np.transpose(vh[:k,:]))
     
-    if len(s) >= k:
-      # calculate new z scores based on svd
-      new_zs = gene_mat.dot(np.transpose(vh[:k,:]))
-  
-      # calculate load on each component
-      load = np.square(s)/sum(np.square(s))
-  
-      # save new zs and fs in dictionaries to save later
-      for i in range(k):
-        loads["f{}".format(i)][gene] = load[i]
-        zs["svd_z{}".format(i)].update(pd.Series(new_zs[i].values,index=new_zs.index).to_dict())
-  
-      # save loadings
-      v_out = pd.DataFrame(vh,columns=gene_mat.columns)
-      #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
-      gene_mat_name = "{}.geneMat".format(gene)
-      v_out.to_csv(gene_mat_name, index=False, sep = "\t")
+        # calculate load on each component
+        load = np.square(s)/sum(np.square(s))
+    
+        # save new zs and fs in dictionaries to save later
+        for i in range(k):
+          loads["f{}".format(i)][gene] = load[i]
+          zs["svd_z{}".format(i)].update(pd.Series(new_zs[i].values,index=new_zs.index).to_dict())
+    
+        # save loadings
+        v_out = pd.DataFrame(vh,columns=gene_mat.columns)
+        #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
+        gene_mat_name = "{}.geneMat".format(gene)
+        v_out.to_csv(gene_mat_name, index=False, sep = "\t")
+    except Exception as e:
+      logging.info("gene",gene," SVD FAILED due to ",e)
       
   for i in range(k):
     df["f{}".format(i)] = df["gene"].map(loads["f{}".format(i)])
