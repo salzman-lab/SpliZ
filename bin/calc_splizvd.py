@@ -275,7 +275,7 @@ def main():
     # calculate z score 
     df["n.g_" + let] = df.groupby("cell_gene")["numReads"].transform("sum")
 
-    df["nSijk" + let] = (df["S_ijk_" + let] - df["sijk{}_mean".format(let)]) / np.sqrt(df["sijk{}_var".format(let)])
+    df["nSijk" + let] = (df["S_ijk_" + let] - df["S_ijk_" + let].median()) / np.sqrt(df["sijk{}_var".format(let)])
     df["mult"] = df["numReads"] * df["nSijk" + let]  / np.sqrt(df["n.g_" + let])
     df["z_" + let] = df["sign"] * df.groupby("cell_gene")["mult"].transform("sum")
     df["scaled_z_" + let] = df["z_" + let] / np.sqrt(df["n.g_" + let])
