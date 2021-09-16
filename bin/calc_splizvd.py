@@ -460,7 +460,7 @@ def main():
         gene_mat_name = "{}.geneMat".format(gene)
         v_out.to_csv(gene_mat_name, index=False, sep = "\t")
     except Exception as e:
-      logging.info("gene",gene," SVD FAILED due to ",e)
+      logging.info("gene {} SVD FAILED".format(gene))
       
   for i in range(k):
     df["f{}".format(i)] = df["gene"].map(loads["f{}".format(i)])
