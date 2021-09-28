@@ -8,7 +8,7 @@ process SUMMARIZE_RESULTS {
         mode: 'copy', 
         pattern: '*.log'
 
-    label 'process_low'
+    label 'process_medium'
 
     input:
     path perm_pvals
