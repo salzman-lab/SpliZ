@@ -6,9 +6,7 @@
 [![GitHub Actions Linting Status](https://github.com/nf-core/spliz/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/spliz/actions)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.04.0-brightgreen.svg)](https://www.nextflow.io/)
 
-[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](https://bioconda.github.io/)
 [![Docker](https://img.shields.io/docker/automated/nfcore/spliz.svg)](https://hub.docker.com/r/nfcore/spliz)
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23spliz-4A154B?logo=slack)](https://nfcore.slack.com/channels/spliz)
 
 ## Introduction
 
