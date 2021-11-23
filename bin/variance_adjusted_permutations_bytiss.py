@@ -57,6 +57,7 @@ def get_var_df(sub_df, z_col, adj_var, grouping_level_2):
 def main():
   np.random.seed(123)
   alpha = 0.05
+  pval_alpha = 0.2
 
   args = get_args()
 
@@ -125,7 +126,7 @@ def main():
           
           if perm_pval:
             sub_df_perm = sub_df.copy()
-            if (pval < alpha):
+            if (pval < pval_alpha):
               Tn1_dist = []
               # for i in range(args.num_perms):
               while len(Tn1_dist) < args.num_perms:
