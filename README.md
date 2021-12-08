@@ -16,7 +16,6 @@
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
 ## Quick Start
- test
 
 1. Install [`nextflow`](https://nf-co.re/usage/installation) (`>=20.04.0`) and [`conda`](https://docs.conda.io/en/latest/).
 
@@ -42,8 +41,16 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     nextflow run salzmanlab/spliz \
         -r main \
         -latest \
-        -c small.config
+        -profile small_test_data
     ```
+    [Sherlock](https://www.sherlock.stanford.edu/) users should use the `sherlock` profile:
+
+
+        nextflow run salzmanlab/spliz \
+            -r main \
+            -latest \
+            -profile small_test_data,sherlock
+
 
 See [usage docs](https://nf-co.re/spliz/usage) for all of the available options when running the pipeline.
 
