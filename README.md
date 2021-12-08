@@ -30,13 +30,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     conda activate spliz_env
     ```
 
-4. To run on the test data set, download the config file and data set.
-    ```bash
-    wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/small_data/small.config
-    wget https://raw.githubusercontent.com/salzmanlab/SpliZ/main/small_data/small.pq
-    ```
-
-5. Run the pipeline on the test data set. You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/executor.html) in the config file, in accordance to your compute needs.
+4. Run the pipeline on the test data set. 
+You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/executor.html) in the config file, in accordance to your compute needs.
     ```bash
     nextflow run salzmanlab/spliz \
         -r main \
