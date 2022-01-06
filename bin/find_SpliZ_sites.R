@@ -13,13 +13,19 @@ p_value_file = args[1]
 first_evec_file = args[2]
 second_evec_file = args[3]
 third_evec_file = args[4]
+libraryType = args[5]
 
 p_value = fread(p_value_file,sep="\t",header=TRUE)
 
 ## I want to select the top 20 and top 50 genes with FDR < 0.05
-##p_value = p_value[perm_pval_adj_svd_z0<0.05]
+if (libraryType == "SS2") {
+  p_value = p_value[perm_pval_adj_svd_z0<0.05]
+}
+
+
 
 topgenes = unique(p_value$gene)
+print(paste("number of genes to run",length(topgenes)))
 
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()

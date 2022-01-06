@@ -26,7 +26,8 @@ workflow ANALYSIS {
     // Step 2: Find SpliZ sites
     FIND_SPLIZ_SITES (
         splizvd_geneMats, 
-        pval_permutations
+        pval_permutations,
+        params.libraryType
     )
 
     // Step 3: Summarize results

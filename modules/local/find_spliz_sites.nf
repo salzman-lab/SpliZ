@@ -10,6 +10,7 @@ process FIND_SPLIZ_SITES {
     input:
     path ch_geneMats
     path perm_pvals
+    val libraryType
 
     output:
     path first_evec     , emit: first_evec
@@ -28,7 +29,9 @@ process FIND_SPLIZ_SITES {
         ${perm_pvals} \\
         ${first_evec} \\
         ${second_evec} \\
-        ${third_evec} 
+        ${third_evec} \\
+        ${libraryType}
+
     """
 
 }
