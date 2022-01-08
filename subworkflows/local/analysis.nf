@@ -5,6 +5,7 @@ include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_result
 workflow ANALYSIS {
     take:
     splizvd_geneMats
+    geneMat_samplesheet
     splizvd_tsv
     splizvd_pq
     param_stem
