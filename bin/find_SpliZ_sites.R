@@ -14,6 +14,7 @@ first_evec_file = args[2]
 second_evec_file = args[3]
 third_evec_file = args[4]
 libraryType = args[5]
+mat_samplesheet = args[6]
 
 p_value = fread(p_value_file,sep="\t",header=TRUE)
 mat_paths = fread(mat_samplesheet,sep="\t",header=TRUE)
