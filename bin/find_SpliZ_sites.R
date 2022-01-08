@@ -16,6 +16,7 @@ third_evec_file = args[4]
 libraryType = args[5]
 
 p_value = fread(p_value_file,sep="\t",header=TRUE)
+mat_paths = fread(mat_samplesheet,sep="\t",header=TRUE)
 
 ## I want to select the top 20 and top 50 genes with FDR < 0.05
 if (libraryType == "SS2") {

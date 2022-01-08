@@ -27,7 +27,8 @@ workflow ANALYSIS {
     FIND_SPLIZ_SITES (
         splizvd_geneMats, 
         pval_permutations,
-        params.libraryType
+        params.libraryType,
+        geneMat_samplesheet
     )
 
     // Step 3: Summarize results

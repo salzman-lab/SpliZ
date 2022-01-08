@@ -462,7 +462,7 @@ def main():
         v_out = pd.DataFrame(vh,columns=gene_mat.columns)
         #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
         gene_mat_name = "{}.geneMat".format(gene)
-        mat_samplesheet.write("{}\t{}{}.geneMat\n".format(gene,args.workdir,gene))
+        mat_samplesheet.write("{}\t{}/{}.geneMat\n".format(gene,args.workdir,gene))
         v_out.to_csv(gene_mat_name, index=False, sep = "\t")
     except Exception as e:
       pass
