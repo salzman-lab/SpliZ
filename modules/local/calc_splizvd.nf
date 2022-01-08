@@ -30,6 +30,7 @@ process CALC_SPLIZVD {
     path outname_tsv    , emit: tsv                                 
     path "*.geneMat"    , optional: true, emit: geneMats
     path "*.log"        , emit: log                                    
+    path "mat_samplesheet.tsv"  , emit: matSheet
 
     script:
     outname_pq          = "${dataname}_sym_SVD_${svd_type}_${param_stem}.pq"
@@ -49,7 +50,8 @@ process CALC_SPLIZVD {
         --grouping_level_2 ${grouping_level_2} \\
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
-        --outname_log ${outname_log} 
+        --outname_log ${outname_log} \\
+        --workdir \$PWD
     """
 
 } 

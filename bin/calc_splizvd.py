@@ -25,6 +25,8 @@ def get_args():
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output file")  
   parser.add_argument("--outname_log", help="Name of log file")
+  parser.add_argument("--workdir", help="path of current work directory")
+
   args = parser.parse_args()
   return args
 
@@ -425,6 +427,8 @@ def main():
   zs = {"svd_z{}".format(i) : {} for i in range(k)}
   
   logging.info("Iterate over each gene")
+  mat_samplesheet = open("mat_samplesheet.tsv","w")
+  mat_samplesheet.write("gene\tpath\n")
   for gene, gene_df in df.groupby("gene"):
     
     # get zcontrib matrix
@@ -458,10 +462,12 @@ def main():
         v_out = pd.DataFrame(vh,columns=gene_mat.columns)
         #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
         gene_mat_name = "{}.geneMat".format(gene)
+        mat_samplesheet.write("{}\t{}{}.geneMat\n".format(gene,args.workdir,gene))
         v_out.to_csv(gene_mat_name, index=False, sep = "\t")
     except Exception as e:
       pass
 #      logging.info("gene {} SVD FAILED".format(gene))
+  mat_samplesheet.close()
       
   for i in range(k):
     df["f{}".format(i)] = df["gene"].map(loads["f{}".format(i)])
