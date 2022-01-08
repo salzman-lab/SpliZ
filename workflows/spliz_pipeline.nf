@@ -44,7 +44,8 @@ workflow SPLIZ_PIPELINE {
             SPLIZ.out.splizvd_geneMats,
             SPLIZ.out.splizvd_tsv,
             SPLIZ.out.splizvd_pq,
-            SPLIZ.out.param_stem
+            SPLIZ.out.param_stem,
+            SPLIZ.out.geneMat_samplesheet
         )
     }
 }
