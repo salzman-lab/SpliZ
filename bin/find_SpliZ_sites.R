@@ -36,7 +36,7 @@ for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
 #    geneMat_file = paste(gene, ".geneMat", sep="")
-    geneMat_file = paste(p_value[p_value$gene == gene]$path, sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
 
     loadings = fread(geneMat_file)
     loadings_sq = loadings[1,]^2
