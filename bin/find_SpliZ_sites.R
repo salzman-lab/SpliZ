@@ -79,7 +79,9 @@ let_to_plot = c()
 for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
-    geneMat_file = paste(gene, ".geneMat", sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
+
+
     loadings = fread(geneMat_file)
     loadings_sq = loadings[2,]^2
     top_site = names(loadings_sq)[loadings_sq==max(loadings_sq)]
@@ -122,7 +124,9 @@ let_to_plot = c()
 for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
-    geneMat_file = paste(gene, ".geneMat", sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
+
+
     loadings = fread(geneMat_file)
     loadings_sq = loadings[3,]^2
     top_site = names(loadings_sq)[loadings_sq==max(loadings_sq)]
