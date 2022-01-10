@@ -30,7 +30,6 @@ workflow SPLIZ {
     )
 
     emit:
-    splizvd_geneMats    = CALC_SPLIZVD.out.geneMats
     geneMat_samplesheet = CALC_SPLIZVD.out.matSheet
     splizvd_tsv         = CALC_SPLIZVD.out.tsv
     splizvd_pq          = CALC_SPLIZVD.out.pq
