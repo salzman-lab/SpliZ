@@ -8,6 +8,7 @@ process FIND_SPLIZ_SITES {
     label 'process_medium'
 
     input:
+    path ch_geneMats
     path perm_pvals
     val libraryType
     path geneMat_samplesheet

@@ -4,6 +4,7 @@ include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_result
 
 workflow ANALYSIS {
     take:
+    splizvd_geneMats
     splizvd_tsv
     splizvd_pq
     param_stem
@@ -25,6 +26,7 @@ workflow ANALYSIS {
 
     // Step 2: Find SpliZ sites
     FIND_SPLIZ_SITES (
+        splizvd_geneMats, 
         pval_permutations,
         params.libraryType,
         geneMat_samplesheet
