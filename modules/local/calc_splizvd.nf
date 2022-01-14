@@ -24,6 +24,7 @@ process CALC_SPLIZVD {
     val grouping_level_2
     val isLight
     val isSICILIAN
+    val rank_quant
 
     output:
     path outname_pq     , emit: pq
@@ -50,7 +51,9 @@ process CALC_SPLIZVD {
         --outname_pq ${outname_pq} \\
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log} \\
-        --workdir \$PWD
+        --workdir \$PWD \\
+        --rank_quant ${rank_quant}
+
     """
 
 } 
