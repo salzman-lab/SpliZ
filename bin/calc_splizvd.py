@@ -231,6 +231,18 @@ def main():
 
   df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
   df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
+  # remove "almost consistutive splicing"
+  rank_quant = 0.05
+  let_dict2 = {"A" : "acc", "B" : "don"}
+  
+  for let in ["A","B"]:
+    df["bottom_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=rank_quant))
+    df["top_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=1 - rank_quant))
+    df["rank_{}".format(let_dict2[let])] = df[["bottom_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].max(axis=1)
+    df["rank_{}".format(let_dict2[let])] = df[["top_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].min(axis=1)
+    
+    # start ranks at 1 (in case 1 is removed by quantiling)
+    df["rank_{}".format(let_dict2[let])] = df["rank_{}".format(let_dict2[let])] - df["bottom_{}_quant".format(let_dict2[let])] + 1
 
   df["max_rank_acc"] = df["posA_group"].map(df.groupby("posA_group")["rank_acc"].max())
   df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
