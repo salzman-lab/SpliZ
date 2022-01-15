@@ -83,6 +83,10 @@
                     "type": "string",
                     "description": "GTF annotation file"
                 },
+                "rank_quant": {
+                    "type": "number",
+                    "description": "Bound SpliZ ranks for each donor/acceptor at this quantile (e.g. values in the lower rank_quant quantile and the upper 1 - rank_quant quantile will be rounded to the quantile limits)"
+                },
                 "help": {
                     "type": "boolean",
                     "description": "Display help text.",
