@@ -33,7 +33,7 @@ def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI
       CI_dict["UMI"].append(vals[-1])
   elif spatial_bar:
     CI_dict["barcode"].append(bam_read.get_tag("XC"))
-    CI_dict["UMI"].append(fill_char)
+    CI_dict["UMI"].append(bam_read.get_tag("XM"))
   else:
     CI_dict["barcode"].append(fill_char)
     CI_dict["UMI"].append(fill_char)
