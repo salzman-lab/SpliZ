@@ -13,7 +13,7 @@ workflow PREPROCESS {
         if (params.SICILIAN) {
             exit 1, "Invalid input, SICILIAN inputs must be provided as input_file."
         } else {
-            if (params.libraryType == '10X') {
+            if ((params.libraryType == '10X') || (params.libraryType == "SlS2")) {
                 ch_bam = Channel.fromPath(params.samplesheet)
                     .splitCsv(header:false)
                     .map { row ->
@@ -34,7 +34,7 @@ workflow PREPROCESS {
                         )
                     }
                 convert_bam = true
-            }
+            } 
         }
     } else if (params.input_file) {
         input_file = file(params.input_file)

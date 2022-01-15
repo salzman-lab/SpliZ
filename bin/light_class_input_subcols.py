@@ -14,7 +14,7 @@ from tqdm import tqdm
 def get_args():
   parser = argparse.ArgumentParser()
   parser.add_argument('--bams', nargs="+",required=True, help='bams to parse (either one or two for paired end)')
-  parser.add_argument("--libraryType",help="Options: SS2, 10X")
+  parser.add_argument("--libraryType",help="Options: SS2, 10X, SlS2")
   parser.add_argument("--annotator", required=True, help="the path to the annotator pickle file")
   parser.add_argument("--gtf", required=True, help="the path to the gtf file")
   parser.add_argument("--outname",help="Output file name")
@@ -22,7 +22,7 @@ def get_args():
   args = parser.parse_args()
   return args
 
-def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI_bar, stranded_library, fill_char = np.nan, strand_dict={True : "-", False : "+"}):
+def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI_bar, stranded_library, spatial_bar, fill_char = np.nan, strand_dict={True : "-", False : "+"}):
   if UMI_bar:
     if cellranger:
       CI_dict["barcode"].append(bam_read.get_tag("CB"))
@@ -31,6 +31,9 @@ def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI
       vals = bam_read.query_name.split("_")
       CI_dict["barcode"].append(vals[-2])
       CI_dict["UMI"].append(vals[-1])
+  elif spatial_bar:
+    CI_dict["barcode"].append(bam_read.get_tag("XC"))
+    CI_dict["UMI"].append(fill_char)
   else:
     CI_dict["barcode"].append(fill_char)
     CI_dict["UMI"].append(fill_char)
@@ -100,7 +103,7 @@ def extract_info_chim(CI_dict,bam_read1,bam_read2,suffix, bam_file, ann, UMI_bar
   return CI_dict
 
 
-def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library):
+def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library, spatial_bar):
 
   CI_dfs = []
   for i in range(len(bam_files)):
@@ -145,7 +148,7 @@ def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded
               # add info from align read
               elif "N" in bam_read.cigarstring:
                 count += 1
-                CI_dict = extract_info_align(cellranger, CI_dict, bam_read, suffix, alignFile, ann, UMI_bar, stranded_library)
+                CI_dict = extract_info_align(cellranger, CI_dict, bam_read, suffix, alignFile, ann, UMI_bar, stranded_library, spatial_bar)
   
               # save genomic alignment information
               else:
@@ -155,7 +158,7 @@ def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded
                   else:
                     genomic_alignments[bam_read.query_name] = max(bam_read.get_tag("AS"), genomic_alignments[bam_read.query_name])
                 else:
-                  CI_dict = extract_info_align(cellranger, CI_dict, bam_read, suffix, alignFile, ann, UMI_bar, stranded_library)
+                  CI_dict = extract_info_align(cellranger, CI_dict, bam_read, suffix, alignFile, ann, UMI_bar, stranded_library, spatial_bar)
 
     CI_df = pd.DataFrame.from_dict(CI_dict)
     if i == 0:
@@ -198,16 +201,24 @@ def main():
     UMI_bar = True
     stranded_library = False
     cellranger = True
+    spatial_bar = False
 
   elif args.libraryType == 'SS2':
     UMI_bar = False
     stranded_library = False
     cellranger = False
+    spatial_bar = False
+  
+  if args.libraryType == "SlS2":
+    UMI_bar = False
+    stranded_library = False
+    cellranger = False
+    spatial_bar = True
 
   for j in range(n_rounds):
     if j == 1:
       bam_files.reverse()
-    primary = get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library)
+    primary = get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library, spatial_bar)
     final_dfs.append(primary)
 
   pd.concat(final_dfs, axis=0).reset_index(drop=True).to_parquet(args.outname)

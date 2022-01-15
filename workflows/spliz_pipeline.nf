@@ -10,9 +10,9 @@ if (!is_valid_svd_type) {
     exit 1, "Invalid svd_type; options are 'normgene' and 'normdonor'."
 }
 
-def is_valid_libraryType = params.libraryType in ["SS2", "10X"]
+def is_valid_libraryType = params.libraryType in ["SS2", "10X", "SlS2"]
 if (!is_valid_libraryType) {
-    exit 1, "Invalid libraryType; options are 'SS2' and '10X'."
+    exit 1, "Invalid libraryType; options are 'SS2', '10X', and 'SlS2'."
 }
 
 /*
