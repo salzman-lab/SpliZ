@@ -23,7 +23,7 @@
                 "outdir": {
                     "type": "string",
                     "description": "Output directory for results",
-                    "default": "./results/${dataname}",
+                    "default": "./results/${params.dataname}",
                     "hidden": true
                 },
                 "SICILIAN": {

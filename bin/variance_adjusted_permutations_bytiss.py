@@ -151,8 +151,12 @@ def main():
   #out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
 
   # OLD
-  out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
-  out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
+  try:
+    out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
+    out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
+  except:
+    out_df["pval_adj"] = np.nan
+    out_df["perm_pval2"] = np.nan
 
   out_df.to_csv(args.outname_all_pvals, sep="\t", index=False)
 
