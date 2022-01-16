@@ -13,7 +13,7 @@ workflow PREPROCESS {
         if (params.SICILIAN) {
             exit 1, "Invalid input, SICILIAN inputs must be provided as input_file."
         } else {
-            if ((params.libraryType == '10X') || (params.libraryType == "SlS2")) {
+            if ((params.libraryType == '10X') || (params.libraryType == "SLS")) {
                 ch_bam = Channel.fromPath(params.samplesheet)
                     .splitCsv(header:false)
                     .map { row ->

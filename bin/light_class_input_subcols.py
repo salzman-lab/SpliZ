@@ -14,7 +14,7 @@ from tqdm import tqdm
 def get_args():
   parser = argparse.ArgumentParser()
   parser.add_argument('--bams', nargs="+",required=True, help='bams to parse (either one or two for paired end)')
-  parser.add_argument("--libraryType",help="Options: SS2, 10X, SlS2")
+  parser.add_argument("--libraryType",help="Options: SS2, 10X, SLS")
   parser.add_argument("--annotator", required=True, help="the path to the annotator pickle file")
   parser.add_argument("--gtf", required=True, help="the path to the gtf file")
   parser.add_argument("--outname",help="Output file name")
@@ -209,7 +209,7 @@ def main():
     cellranger = False
     spatial_bar = False
   
-  if args.libraryType == "SlS2":
+  if args.libraryType == "SLS":
     UMI_bar = False
     stranded_library = False
     cellranger = False

@@ -77,7 +77,7 @@
                 },
                 "libraryType": {
                     "type": "string",
-                    "description": "Options: 10X and SS2"
+                    "description": "Options: 10X (for 10X chromium), SS2 (for Smart-seq2), and SLS (for Slide-seq or Slide-seq2)"
                 },
                 "gtf": {
                     "type": "string",
