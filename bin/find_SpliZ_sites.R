@@ -29,6 +29,16 @@ if (libraryType == "SS2") {
 topgenes = unique(p_value$gene)
 print(paste("number of genes to run",length(topgenes)))
 
+if (length(topgenes) == 0) {
+  to_plot <- data.frame(matrix(ncol = 3, nrow = 0))
+  names(to_plot) = c("gene","let","end")
+  write.table(to_plot, first_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(to_plot, second_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(to_plot, third_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+
+} else {
+
+
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()
 let_to_plot = c()
@@ -155,3 +165,4 @@ to_plot = data.table(gene_to_plot,let_to_plot,coordinate_to_plot)
 names(to_plot) = c("gene","let","end")
 
 write.table(to_plot, third_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+}
