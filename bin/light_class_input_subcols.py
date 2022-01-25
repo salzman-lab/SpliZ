@@ -26,7 +26,7 @@ def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI
   if UMI_bar:
     if cellranger:
       CI_dict["barcode"].append(bam_read.get_tag("CB"))
-      CI_dict["UMI"].append(bam_read.get_tag("UR"))
+      CI_dict["UMI"].append(bam_read.get_tag("UB"))
     else:
       vals = bam_read.query_name.split("_")
       CI_dict["barcode"].append(vals[-2])
