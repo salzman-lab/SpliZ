@@ -84,7 +84,7 @@ def main():
 
   if args.grouping_level_1 == "dummy":
     df["dummy"] = "null"
-  df["tiss_comp"] = df[args.grouping_level_1] + df[args.grouping_level_2]
+  df["tiss_comp"] = df[args.grouping_level_1].astype(str) + df[args.grouping_level_2].astype(str)
 
   # subset to ontologies with > 20 cells
   df["ontology_gene"] = df[args.grouping_level_2] + df["gene"]
