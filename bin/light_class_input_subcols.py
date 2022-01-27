@@ -25,8 +25,16 @@ def get_args():
 def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI_bar, stranded_library, spatial_bar, fill_char = np.nan, strand_dict={True : "-", False : "+"}):
   if UMI_bar:
     if cellranger:
+      print("CB",bam_read.has_tag("CB"))
+      print("UB",bam_read.has_tag("UB"))
+      print("UR",bam_read.has_tag("UR"))
+
       CI_dict["barcode"].append(bam_read.get_tag("CB"))
-      CI_dict["UMI"].append(bam_read.get_tag("UR"))
+      try:
+        CI_dict["UMI"].append(bam_read.get_tag("UB"))
+      except:
+        CI_dict["UMI"].append(bam_read.get_tag("UR"))
+
     else:
       vals = bam_read.query_name.split("_")
       CI_dict["barcode"].append(vals[-2])
