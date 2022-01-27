@@ -125,6 +125,7 @@ def main():
   light = bool(int(args.isLight))
   SICILIAN = bool(int(args.isSICILIAN))
 
+
   logging.basicConfig(
     filename = args.outname_log,
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -155,6 +156,7 @@ def main():
     df["dummy"] = "null"
 
   required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "chrR1A", "called"]
+  drop_cols = ["geneR1B_uniq","chrR1B"]
   #passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
   #if passes_input_check: 
   #  logging.info("Passed input column check")
@@ -162,10 +164,11 @@ def main():
   #  logging.exception("Failed input column check! Exiting")
   #  sys.exit(1)
 
-  required_cols.append(args.grouping_level_2)
-  required_cols.append(args.grouping_level_1)
+#  required_cols.append(args.grouping_level_2)
+#  required_cols.append(args.grouping_level_1)
 
-  df = df[required_cols]
+  df = df[[x for x in df.columns if x not in drop_cols]]
+  meta_cols = [x for x in df.columns if x not in required_cols]
   
   logging.info("Rename SICILIAN columns")
 
@@ -490,7 +493,7 @@ def main():
   
   df["svd_z_sumsq"] = (df[["svd_z{}".format(i) for i in range(k)]]**2).sum(axis=1)
 
-  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] #+ velocity_cols
+  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] + meta_cols#+ velocity_cols
   if "ontology" in df.columns:
     sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
   
