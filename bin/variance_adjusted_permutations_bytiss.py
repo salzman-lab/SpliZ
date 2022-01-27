@@ -87,7 +87,7 @@ def main():
   df["tiss_comp"] = df[args.grouping_level_1].astype(str) + df[args.grouping_level_2].astype(str)
 
   # subset to ontologies with > 20 cells
-  df["ontology_gene"] = df[args.grouping_level_2] + df["gene"]
+  df["ontology_gene"] = df[args.grouping_level_2].astype(str) + df["gene"]
   df["num_ont_gene"] = df["ontology_gene"].map(df.groupby("ontology_gene")["cell_gene"].nunique())
   df = df[df["num_ont_gene"] > 10]
 
@@ -160,7 +160,7 @@ def main():
 
   out_df.to_csv(args.outname_all_pvals, sep="\t", index=False)
 
-  out_df["gene_grouping_level_1"] = out_df["gene"] + out_df["grouping_level_1"]
+  out_df["gene_grouping_level_1"] = out_df["gene"] + out_df["grouping_level_1"].astype(str)
 
   # reformat output
   new_out = {"gene" : [], "num_onts" : [], "grouping_level_1" : []}
