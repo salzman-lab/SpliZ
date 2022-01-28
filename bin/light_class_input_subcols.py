@@ -25,9 +25,9 @@ def get_args():
 def extract_info_align(cellranger, CI_dict, bam_read, suffix, bam_file, ann, UMI_bar, stranded_library, spatial_bar, fill_char = np.nan, strand_dict={True : "-", False : "+"}):
   if UMI_bar:
     if cellranger:
-      print("CB",bam_read.has_tag("CB"))
-      print("UB",bam_read.has_tag("UB"))
-      print("UR",bam_read.has_tag("UR"))
+#      print("CB",bam_read.has_tag("CB"))
+#      print("UB",bam_read.has_tag("UB"))
+#      print("UR",bam_read.has_tag("UR"))
 
       CI_dict["barcode"].append(bam_read.get_tag("CB"))
       try:
@@ -135,7 +135,7 @@ def get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded
     #for bam_read in tqdm(alignFile.fetch(until_eof=True)):
     for bam_read in (alignFile.fetch(until_eof=True)):
       # require CB if this is cell ranger
-      if ((not cellranger) | (bam_read.has_tag("CB"))):
+      if ((not cellranger) | ((bam_read.has_tag("CB") & (bam_read.cigarstring is not None)))): 
 
         # make sure read is mapped
         if not bam_read.is_unmapped:
