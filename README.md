@@ -1,19 +1,15 @@
-# ![nf-core/spliz](docs/images/nf-core-spliz_logo.png)
-
-**Code to calculate the Splicing Z Score (SZS) for single cell RNA-seq splicing analysis**.
-
-[![GitHub Actions CI Status](https://github.com/nf-core/spliz/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/spliz/actions)
-[![GitHub Actions Linting Status](https://github.com/nf-core/spliz/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/spliz/actions)
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.04.0-brightgreen.svg)](https://www.nextflow.io/)
-
-[![Docker](https://img.shields.io/docker/automated/nfcore/spliz.svg)](https://hub.docker.com/r/nfcore/spliz)
-
 ## Introduction
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 **nf-core/spliz** is a bioinformatics best-practise analysis pipeline for calculating the splicing z-score for single cell RNA-seq analysis.
 
-The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
+This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
+
+> The nf-core framework for community-curated bioinformatics pipelines.
+>
+> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
+>
+> Nat Biotechnol. 2020 Feb 13. doi: 10.1038/s41587-020-0439-x.
 
 ## Quick Start
 
