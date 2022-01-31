@@ -4,10 +4,10 @@ include { SUMMARIZE_RESULTS     }   from   '../../modules/local/summarize_result
 
 workflow ANALYSIS {
     take:
-    splizvd_geneMats
     splizvd_tsv
     splizvd_pq
     param_stem
+    geneMat_samplesheet
 
     main:
     // Step 1: Calculate variance adjusted permutations
@@ -25,8 +25,9 @@ workflow ANALYSIS {
 
     // Step 2: Find SpliZ sites
     FIND_SPLIZ_SITES (
-        splizvd_geneMats, 
-        pval_permutations
+        pval_permutations,
+        params.libraryType,
+        geneMat_samplesheet
     )
 
     // Step 3: Summarize results

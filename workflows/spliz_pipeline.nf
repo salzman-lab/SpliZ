@@ -10,9 +10,9 @@ if (!is_valid_svd_type) {
     exit 1, "Invalid svd_type; options are 'normgene' and 'normdonor'."
 }
 
-def is_valid_libraryType = params.libraryType in ["SS2", "10X"]
+def is_valid_libraryType = params.libraryType in ["SS2", "10X", "SLS"]
 if (!is_valid_libraryType) {
-    exit 1, "Invalid libraryType; options are 'SS2' and '10X'."
+    exit 1, "Invalid libraryType; options are 'SS2', '10X', and 'SLS'."
 }
 
 /*
@@ -41,10 +41,10 @@ workflow SPLIZ_PIPELINE {
     
     if (params.run_analysis) {
         ANALYSIS (
-            SPLIZ.out.splizvd_geneMats,
             SPLIZ.out.splizvd_tsv,
             SPLIZ.out.splizvd_pq,
-            SPLIZ.out.param_stem
+            SPLIZ.out.param_stem,
+            SPLIZ.out.geneMat_samplesheet
         )
     }
 }

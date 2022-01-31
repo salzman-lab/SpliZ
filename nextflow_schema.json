@@ -23,7 +23,7 @@
                 "outdir": {
                     "type": "string",
                     "description": "Output directory for results",
-                    "default": "./results/${dataname}",
+                    "default": "./results/${params.dataname}",
                     "hidden": true
                 },
                 "SICILIAN": {
@@ -77,11 +77,15 @@
                 },
                 "libraryType": {
                     "type": "string",
-                    "description": "Options: 10X and SS2"
+                    "description": "Options: 10X (for 10X chromium), SS2 (for Smart-seq2), and SLS (for Slide-seq or Slide-seq2)"
                 },
                 "gtf": {
                     "type": "string",
                     "description": "GTF annotation file"
+                },
+                "rank_quant": {
+                    "type": "number",
+                    "description": "Bound SpliZ ranks for each donor/acceptor at this quantile (e.g. values in the lower rank_quant quantile and the upper 1 - rank_quant quantile will be rounded to the quantile limits)"
                 },
                 "help": {
                     "type": "boolean",

@@ -25,6 +25,10 @@ def get_args():
   parser.add_argument("--outname_pq", help="Name of output file")
   parser.add_argument("--outname_tsv", help="Name of output file")  
   parser.add_argument("--outname_log", help="Name of log file")
+  parser.add_argument("--workdir", help="path of current work directory")
+  parser.add_argument("--rank_quant", help="quantile to threshold ranks at",type=float,default=0)
+
+
   args = parser.parse_args()
   return args
 
@@ -121,6 +125,7 @@ def main():
   light = bool(int(args.isLight))
   SICILIAN = bool(int(args.isSICILIAN))
 
+
   logging.basicConfig(
     filename = args.outname_log,
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -151,6 +156,7 @@ def main():
     df["dummy"] = "null"
 
   required_cols = ["juncPosR1A", "geneR1A_uniq", "juncPosR1B", "numReads", "cell", "splice_ann", "refName_newR1", "chrR1A", "called"]
+  drop_cols = ["geneR1B_uniq","chrR1B"]
   #passes_input_check, required_cols = contains_required_cols(df, base_required_cols, args.grouping_level_2, args.grouping_level_1)
   #if passes_input_check: 
   #  logging.info("Passed input column check")
@@ -158,10 +164,11 @@ def main():
   #  logging.exception("Failed input column check! Exiting")
   #  sys.exit(1)
 
-  required_cols.append(args.grouping_level_2)
-  required_cols.append(args.grouping_level_1)
+#  required_cols.append(args.grouping_level_2)
+#  required_cols.append(args.grouping_level_1)
 
-  df = df[required_cols]
+  df = df[[x for x in df.columns if x not in drop_cols]]
+  meta_cols = [x for x in df.columns if x not in required_cols]
   
   logging.info("Rename SICILIAN columns")
 
@@ -229,6 +236,19 @@ def main():
 
   df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
   df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
+  # remove "almost consistutive splicing"
+  if args.rank_quant > 0:
+    let_dict2 = {"A" : "acc", "B" : "don"}
+    
+    # threshold ranks for each donor and acceptor
+    for let in ["A","B"]:
+      df["bottom_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=args.rank_quant))
+      df["top_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=1 - args.rank_quant))
+      df["rank_{}".format(let_dict2[let])] = df[["bottom_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].max(axis=1)
+      df["rank_{}".format(let_dict2[let])] = df[["top_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].min(axis=1)
+      
+      # start ranks at 1 (in case 1 is removed by quantiling)
+      df["rank_{}".format(let_dict2[let])] = df["rank_{}".format(let_dict2[let])] - df["bottom_{}_quant".format(let_dict2[let])] + 1
 
   df["max_rank_acc"] = df["posA_group"].map(df.groupby("posA_group")["rank_acc"].max())
   df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
@@ -380,7 +400,7 @@ def main():
         idx = df[(~df["z_Start_{}".format(y)].isna()) & (~df["z_End_{}".format(y)].isna())].index
         df.loc[idx,"z_{}".format(y)] = (df.loc[idx,"z_Start_{}".format(y)] - df.loc[idx,"z_End_{}".format(y)])/np.sqrt(2) - df["cov_{}".format(y)]
 
-  df["ontology"] = df[args.grouping_level_1] + df[args.grouping_level_2]
+  df["ontology"] = df[args.grouping_level_1].astype(str) + df[args.grouping_level_2].astype(str)
   
   df["n.g"] = df.groupby("cell_gene")["numReads"].transform("sum")
   df["scaled_z"] = df["z"] / np.sqrt(df["n.g"])
@@ -425,6 +445,8 @@ def main():
   zs = {"svd_z{}".format(i) : {} for i in range(k)}
   
   logging.info("Iterate over each gene")
+  mat_samplesheet = open("mat_samplesheet.tsv","w")
+  mat_samplesheet.write("gene\tpath\n")
   for gene, gene_df in df.groupby("gene"):
     
     # get zcontrib matrix
@@ -458,10 +480,12 @@ def main():
         v_out = pd.DataFrame(vh,columns=gene_mat.columns)
         #gene_mat_name = "{}_{}_{}.geneMat".format(gene, args.dataname, args.param_stem)
         gene_mat_name = "{}.geneMat".format(gene)
+        mat_samplesheet.write("{}\t{}/{}.geneMat\n".format(gene,args.workdir,gene))
         v_out.to_csv(gene_mat_name, index=False, sep = "\t")
     except Exception as e:
       pass
 #      logging.info("gene {} SVD FAILED".format(gene))
+  mat_samplesheet.close()
       
   for i in range(k):
     df["f{}".format(i)] = df["gene"].map(loads["f{}".format(i)])
@@ -469,9 +493,9 @@ def main():
   
   df["svd_z_sumsq"] = (df[["svd_z{}".format(i) for i in range(k)]]**2).sum(axis=1)
 
-  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] #+ velocity_cols
+  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] + meta_cols#+ velocity_cols
   if "ontology" in df.columns:
-    sub_cols = sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]
+    sub_cols = list(set(sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]))
   
   df["chrR1A"] = df["chrR1A"].astype('str')
 

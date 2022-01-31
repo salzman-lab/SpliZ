@@ -13,13 +13,31 @@ p_value_file = args[1]
 first_evec_file = args[2]
 second_evec_file = args[3]
 third_evec_file = args[4]
+libraryType = args[5]
+mat_samplesheet = args[6]
 
 p_value = fread(p_value_file,sep="\t",header=TRUE)
+mat_paths = fread(mat_samplesheet,sep="\t",header=TRUE)
 
 ## I want to select the top 20 and top 50 genes with FDR < 0.05
-##p_value = p_value[perm_pval_adj_svd_z0<0.05]
+if (libraryType == "SS2") {
+  p_value = p_value[perm_pval_adj_svd_z0<0.05]
+}
+
+
 
 topgenes = unique(p_value$gene)
+print(paste("number of genes to run",length(topgenes)))
+
+if (length(topgenes) == 0) {
+  to_plot <- data.frame(matrix(ncol = 3, nrow = 0))
+  names(to_plot) = c("gene","let","end")
+  write.table(to_plot, first_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(to_plot, second_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(to_plot, third_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+
+} else {
+
 
 gene_to_plot = c() # I get these vectors to build a data table so that their dot plots can be made automatically
 coordinate_to_plot = c()
@@ -27,7 +45,9 @@ let_to_plot = c()
 for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
-    geneMat_file = paste(gene, ".geneMat", sep="")
+#    geneMat_file = paste(gene, ".geneMat", sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
+
     loadings = fread(geneMat_file)
     loadings_sq = loadings[1,]^2
     top_site = names(loadings_sq)[loadings_sq==max(loadings_sq)]
@@ -69,7 +89,9 @@ let_to_plot = c()
 for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
-    geneMat_file = paste(gene, ".geneMat", sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
+
+
     loadings = fread(geneMat_file)
     loadings_sq = loadings[2,]^2
     top_site = names(loadings_sq)[loadings_sq==max(loadings_sq)]
@@ -112,7 +134,9 @@ let_to_plot = c()
 for (counter in 1:length(topgenes)){
   gene = topgenes[counter]  # name of the gene
   tryCatch({
-    geneMat_file = paste(gene, ".geneMat", sep="")
+    geneMat_file = mat_paths$path[mat_paths$gene == gene]
+
+
     loadings = fread(geneMat_file)
     loadings_sq = loadings[3,]^2
     top_site = names(loadings_sq)[loadings_sq==max(loadings_sq)]
@@ -141,3 +165,4 @@ to_plot = data.table(gene_to_plot,let_to_plot,coordinate_to_plot)
 names(to_plot) = c("gene","let","end")
 
 write.table(to_plot, third_evec_file, sep = "\t", row.names = FALSE, quote = FALSE)
+}

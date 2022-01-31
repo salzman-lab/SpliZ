@@ -9,7 +9,7 @@ workflow CONVERT_BAM {
 
     main:
 
-    if (params.libraryType == '10X') {
+    if ((params.libraryType == '10X') || (params.libraryType == "SLS")) {
         CLASS_INPUT_10X (
             ch_bam,
             params.dataname,

@@ -84,10 +84,10 @@ def main():
 
   if args.grouping_level_1 == "dummy":
     df["dummy"] = "null"
-  df["tiss_comp"] = df[args.grouping_level_1] + df[args.grouping_level_2]
+  df["tiss_comp"] = df[args.grouping_level_1].astype(str) + df[args.grouping_level_2].astype(str)
 
   # subset to ontologies with > 20 cells
-  df["ontology_gene"] = df[args.grouping_level_2] + df["gene"]
+  df["ontology_gene"] = df[args.grouping_level_2].astype(str) + df["gene"]
   df["num_ont_gene"] = df["ontology_gene"].map(df.groupby("ontology_gene")["cell_gene"].nunique())
   df = df[df["num_ont_gene"] > 10]
 
@@ -151,12 +151,16 @@ def main():
   #out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
 
   # OLD
-  out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
-  out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
+  try:
+    out_df["pval_adj"] = multipletests(out_df["pval"],alpha, method="fdr_bh")[1]
+    out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2_adj"] = multipletests(out_df.loc[~out_df["perm_pval2"].isna(),"perm_pval2"], alpha, method = "fdr_bh")[1]
+  except:
+    out_df["pval_adj"] = np.nan
+    out_df["perm_pval2"] = np.nan
 
   out_df.to_csv(args.outname_all_pvals, sep="\t", index=False)
 
-  out_df["gene_grouping_level_1"] = out_df["gene"] + out_df["grouping_level_1"]
+  out_df["gene_grouping_level_1"] = out_df["gene"] + out_df["grouping_level_1"].astype(str)
 
   # reformat output
   new_out = {"gene" : [], "num_onts" : [], "grouping_level_1" : []}
