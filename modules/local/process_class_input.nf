@@ -23,6 +23,7 @@ process PROCESS_CLASS_INPUT {
         --input_file ${class_input} \\
         --meta ${meta} \\
         --libraryType ${libraryType} \\
-        --outname ${outname} 
+        --outname ${outname} \\
+        --bam ${bam}
     """
 }
