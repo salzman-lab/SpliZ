@@ -229,8 +229,33 @@ def main():
     primary = get_final_df(cellranger, bam_files, j, suffixes, ann, UMI_bar, gtf, stranded_library, spatial_bar)
     final_dfs.append(primary)
 
-  pd.concat(final_dfs, axis=0).reset_index(drop=True).to_parquet(args.outname)
-  
+  thresh = 5
+  k = 20
+  ci = pd.concat(final_dfs, axis=0).reset_index(drop=True)
+  ci.to_parquet(args.outname)
+
+  # only look for introns if splice junctions occur frequently enough
+  vc = ci["refName_ABR1"].value_counts()
+  ci = ci[ci["refName_ABR1"].isin(vc[vc > thresh].index)]
+  ci["minVal"] = ci[["juncPosR1A","juncPosR1B"]].min(axis=1)
+  ci["maxVal"] = ci[["juncPosR1A","juncPosR1B"]].max(axis=1)
+
+  # create bed columns
+  cis = []
+  for val in ["min","max"]:
+    
+    ci["chromStart"] = ci["{}Val".format(val)] - k
+    ci["chromEnd"] = ci["{}Val".format(val)] + k
+    if val == "min":
+      ci["name"] = ci["refName_ABR1"].str.split(":").str[:5].apply(":".join) + ":" + (ci["{}Val".format(val)] + 1).astype(str) + ":" + ci["refName_ABR1"].str.split(":").str[6:].apply(":".join)
+    elif val == "max":
+      ci["name"] = ci["refName_ABR1"].str.split(":").str[:2].apply(":".join) + ":" + (ci["{}Val".format(val)] - 1).astype(str) + ":" + ci["refName_ABR1"].str.split(":").str[3:].apply(":".join)
+    ci["strand"] = ci["refName_ABR1"].str.split("|").str[0].str.split(":").str[3]
+    ci["strand"] = ci["strand"].map({"?" : ".","+" : "+","-" : "-"})
+    cis.append(ci[["chrR1A","chromStart","chromEnd","name","strand"]].drop_duplicates())  
+
+  bed = pd.concat(cis)
+  bed.to_csv("{}.bed".format(args.outname[:-3],k),sep="\t",index=False,header=False)
   pysam.set_verbosity(save)
 
 
