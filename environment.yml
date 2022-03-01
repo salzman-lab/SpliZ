@@ -19,3 +19,4 @@ dependencies:
   - scipy=1.7.1
   - statsmodels=0.12.2
   - nextflow=21.04.0
+  - bedtools

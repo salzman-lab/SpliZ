@@ -7,6 +7,7 @@ process PROCESS_CLASS_INPUT {
     label 'process_medium'
 
     input:
+    tuple val(sample_ID), file(bam)
     path class_input
     val dataname
     val libraryType

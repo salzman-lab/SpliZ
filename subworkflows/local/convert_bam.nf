@@ -38,6 +38,7 @@ workflow CONVERT_BAM {
     ch_class_input.view()
     
     PROCESS_CLASS_INPUT (
+        ch_bam,
         ch_class_input,
         params.dataname,
         params.libraryType,
