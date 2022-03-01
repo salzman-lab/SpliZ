@@ -23,6 +23,9 @@ process CLASS_INPUT_10X {
         --annotator ${annotator_pickle} \\
         --gtf ${gtf} \\
         --outname ${outname} 
+
+    bedtools intersect -a ${sample_ID}.bed -b ${bam}  -wa -wb -f 1 >  ${sample_ID}.temp 
+    awk '{if ($10==255) print }' ${sample_ID}.temp > ${sample_ID}.txt
     """
 
 }

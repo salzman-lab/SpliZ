@@ -255,7 +255,7 @@ def main():
     cis.append(ci[["chrR1A","chromStart","chromEnd","name","strand"]].drop_duplicates())  
 
   bed = pd.concat(cis)
-  bed.to_csv("{}.bed".format(args.outname[:-3],k),sep="\t",index=False,header=False)
+  bed.to_csv("{}bed".format(args.outname[:-11],k),sep="\t",index=False,header=False)
   pysam.set_verbosity(save)
 
 
