@@ -37,6 +37,8 @@ process CALC_SPLIZVD {
     outname_tsv         = "${dataname}_sym_SVD_${svd_type}_${param_stem}_subcol.tsv"
     outname_log         = "calc_splizvd.log"
     
+    def exc_intron = params.exc_intron_ret ? "--exc_intron_ret" : ""
+
     """
     calc_splizvd.py \\
         --input ${input} \\
@@ -52,7 +54,8 @@ process CALC_SPLIZVD {
         --outname_tsv ${outname_tsv} \\
         --outname_log ${outname_log} \\
         --workdir \$PWD \\
-        --rank_quant ${rank_quant}
+        --rank_quant ${rank_quant} \\
+        ${exc_intron}
 
     """
 

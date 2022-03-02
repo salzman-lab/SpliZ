@@ -15,6 +15,12 @@
                     "type": "string",
                     "description": "Name identifier of the SpliZ run"
                 },
+                "exc_intron_ret": {
+                    "type": "boolean",
+                    "description": "if true, only find differences in intron retention",
+		    "default": false
+                },
+
                 "input_file": {
                     "type": "string",
                     "fa_icon": "fas fa-dna",

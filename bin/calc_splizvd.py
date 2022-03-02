@@ -27,6 +27,7 @@ def get_args():
   parser.add_argument("--outname_log", help="Name of log file")
   parser.add_argument("--workdir", help="path of current work directory")
   parser.add_argument("--rank_quant", help="quantile to threshold ranks at",type=float,default=0)
+  parser.add_argument("--exc_intron_ret", action="store_true",help="if included, only intron retention is assessed")
 
 
   args = parser.parse_args()
@@ -234,9 +235,18 @@ def main():
   df["posA_group"] = df["juncStart"].astype(str) + df["gene"]
   df["posB_group"] = df["juncEnd"].astype(str) + df["gene"]
 
-  df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
-  df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
-  # remove "almost consistutive splicing"
+  if args.exc_intron_ret:
+
+    # should this be negated somehow? do it differently for different strands?
+    df["rank_acc"] = 2
+    df["rank_don"] = 2
+    df.loc[df["intron"],"rank_acc"] = 1
+    df.loc[df["intron"],"rank_don"] = 1
+
+  else:
+    df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
+    df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
+    # remove "almost consistutive splicing"
   if args.rank_quant > 0:
     let_dict2 = {"A" : "acc", "B" : "don"}
     
@@ -249,6 +259,9 @@ def main():
       
       # start ranks at 1 (in case 1 is removed by quantiling)
       df["rank_{}".format(let_dict2[let])] = df["rank_{}".format(let_dict2[let])] - df["bottom_{}_quant".format(let_dict2[let])] + 1
+
+  # change ranks for intron retention here
+  # do either / or above
 
   df["max_rank_acc"] = df["posA_group"].map(df.groupby("posA_group")["rank_acc"].max())
   df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
