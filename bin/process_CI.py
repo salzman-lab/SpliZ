@@ -70,6 +70,8 @@ def main():
 
     # intron retention inclusion
     int_df = get_intron_ret_df(row["file"][:-11] + "txt", args.bam)
+    df["intron"] = False
+    int_df["intron"] = True
     df = pd.concat([df,int_df])
 
     # remove UMI duplicates by cell + junction
