@@ -493,7 +493,7 @@ def main():
   
   df["svd_z_sumsq"] = (df[["svd_z{}".format(i) for i in range(k)]]**2).sum(axis=1)
 
-  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] + meta_cols#+ velocity_cols
+  sub_cols = ["cell","gene","scZ","svd_z_sumsq","n.g_Start","n.g_End","intron"] + ["f{}".format(i) for i in range(k)] + ["svd_z{}".format(i) for i in range(k)] + meta_cols#+ velocity_cols
   if "ontology" in df.columns:
     sub_cols = list(set(sub_cols + [args.grouping_level_1, args.grouping_level_2, "ontology"]))
   
