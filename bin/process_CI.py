@@ -67,12 +67,16 @@ def main():
     sample_ID = row['sample_ID']
     fn = Path(row['file'])
     df = pd.read_parquet(fn)
+    print("df shape",df.shape)
 
     # intron retention inclusion
     int_df = get_intron_ret_df(row["file"][:-11] + "txt", args.bam)
+    print("intron df shape",int_df.shape)
     df["intron"] = False
     int_df["intron"] = True
     df = pd.concat([df,int_df])
+    print(df.head())
+    print("intron in cols","intron" in df.columns)
 
     # remove UMI duplicates by cell + junction
     df = df.drop_duplicates(["barcode","UMI","refName_ABR1"])
@@ -99,16 +103,21 @@ def main():
     dfs.append(df)
 
   full_df = pd.concat(dfs)
+  print("intron in cols","intron" in full_df.columns)
+
   full_df["called"] = 1
   full_df["refName_newR1"] = full_df["refName_ABR1"]
   full_df.rename(columns={"geneR1A" : "geneR1A_uniq", "geneR1B" : "geneR1B_uniq"}, inplace=True)
   
   final_df = full_df[["refName_newR1","geneR1A_uniq","geneR1B_uniq", "juncPosR1A","juncPosR1B","chrR1A","chrR1B","numReads","cell_id","intron"]]
-
+  print("intron in cols","intron" in final_df.columns)
+ 
   meta = pd.read_csv(args.meta, sep="\t") 
   final_df.drop([x for x in final_df.columns if x in meta.columns and x != "cell_id"], inplace=True, axis=1)
+  print("intron in cols","intron" in final_df.columns)
 
   merged = final_df.merge(meta, left_on="cell_id", right_on="cell_id", how = "left")
+  print("intron in cols","intron" in merged.columns)
 
   merged.rename(columns={'cell_id': 'cell'}, inplace=True)
   merged.to_parquet(args.outname)
