@@ -11,6 +11,7 @@ def get_args():
   parser.add_argument("--meta", help="Metadata file")
   parser.add_argument("--outname", help="Output file name")
   parser.add_argument("--bam", help="bam file to extract intron reads from")
+  parser.add_argument("--exc_intron_ret", action="store_true",help="if included, only intron retention is assessed")
 
   parser.add_argument("--libraryType")
 

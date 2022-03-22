@@ -18,12 +18,15 @@ process PROCESS_CLASS_INPUT {
 
     script:
     outname = "${dataname}.pq"
+    def exc_intron = params.exc_intron_ret ? "--exc_intron_ret" : "" 
     """
     process_CI.py \\
         --input_file ${class_input} \\
         --meta ${meta} \\
         --libraryType ${libraryType} \\
         --outname ${outname} \\
-        --bam ${bam}
+        --bam ${bam} \\
+        ${exc_intron}
+
     """
 }

@@ -238,6 +238,7 @@ def main():
   if args.exc_intron_ret:
 
     # should this be negated somehow? do it differently for different strands?
+    # need to only include junctions with intron
     df["rank_acc"] = 2
     df["rank_don"] = 2
     df.loc[df["intron"],"rank_acc"] = 1
