@@ -33,11 +33,14 @@ def get_args():
   args = parser.parse_args()
   return args
 
-def prepare_df(df, let, rank_by_donor, rev_let, let_dict):
+def prepare_df(df, let, rank_by_donor, rev_let, let_dict, exc_intron_ret):
   
   # create donor identifier
   df["pos{}_group".format(let)] = df["junc{}".format(let)].astype(str) + df["gene"]
-  df["rank_" + let_dict[let]] = df.groupby("pos{}_group".format(let))["junc{}".format(rev_let[let])].rank(method="dense")
+
+  # we have already corrected numbering for the intron retention version; this would just mess it up
+  if not exc_intron_ret:
+    df["rank_" + let_dict[let]] = df.groupby("pos{}_group".format(let))["junc{}".format(rev_let[let])].rank(method="dense")
 
   # remove consitutive splicing
   df["max_rank"] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_" + let_dict[let]].max())
@@ -253,8 +256,8 @@ def main():
     
     # threshold ranks for each donor and acceptor
     for let in ["A","B"]:
-      df["bottom_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=args.rank_quant))
-      df["top_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=1 - args.rank_quant))
+      df["bottom_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=args.rank_quant)).apply(np.floor)
+      df["top_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=1 - args.rank_quant)).apply(np.ceil)
       df["rank_{}".format(let_dict2[let])] = df[["bottom_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].max(axis=1)
       df["rank_{}".format(let_dict2[let])] = df[["top_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].min(axis=1)
       
@@ -292,7 +295,7 @@ def main():
   for let in letters:
     df = full_df
     # create donor identifier
-    df = prepare_df(df, let, rank_by_donor, rev_let, let_dict)
+    df = prepare_df(df, let, rank_by_donor, rev_let, let_dict,args.exc_intron_ret)
 
     logging.info("Prepare df")
     df = calc_Sijk(df,let,args.pinning_S, let_dict)
