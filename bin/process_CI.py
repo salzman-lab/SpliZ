@@ -121,7 +121,12 @@ def main():
   print("intron in cols","intron" in merged.columns)
 
   merged.rename(columns={'cell_id': 'cell'}, inplace=True)
-  merged.to_parquet(args.outname)
 
+  if args.exc_intron_ret:
+    for let in ["A","B"]:
+      merged["loc{}".format(let)] = merged["chrR1{}".format(let)] + "_" + merged["juncPosR1{}".format(let)].astype(str)
+      merged["intron{}".format(let)] = merged["loc{}".format(let)].map(merged.groupby("loc{}".format(let))["intron"].any())
+    merged = merged[merged["intronA"] | merged["intronB"]]
+  merged.to_parquet(args.outname)
 
 main()
