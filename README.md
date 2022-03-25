@@ -117,7 +117,7 @@ This repositiory contains code to perform the analyses in this paper:
 >
 > Julia Eve Olivieri, Roozbeh Dehghannasiri, Julia Salzman.
 >
-> _bioRxiv_ 2021 Mar 31. doi: [10.1101/2020.11.10.377572](https://doi.org/10.1101/2020.11.10.377572).
+> _Nature Methods_ 2022 Mar 3. doi: [10.1038/s41592-022-01400-x](https://doi.org/10.1038/s41592-022-01400-x).
 
 You can cite the `nf-core` publication as follows:
 
