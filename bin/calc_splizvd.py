@@ -331,6 +331,7 @@ def main():
   
       # get junction that "contributes the most" to the z score
       df["temp"] = df["x_sijk"] / np.sqrt(df["denom_sq"])
+      df["temp"].fillna(0,inplace=True)
       df["temp_mag"] = abs(df["temp"])
       df["idxmax_z"] = df["cell_gene"].map(df.groupby("cell_gene")["temp_mag"].idxmax())
       map_df = df.loc[df["idxmax_z"],["cell_gene","refName_newR1","temp"]]
