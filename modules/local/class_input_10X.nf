@@ -24,7 +24,9 @@ process CLASS_INPUT_10X {
         --gtf ${gtf} \\
         --outname ${outname} 
 
-    bedtools intersect -a ${sample_ID}.bed -b ${bam}  -wa -wb -f 1 >  ${sample_ID}.temp 
+    samtools view -H ${bam} | grep -P "@SQ\tSN:"| sed 's/@SQ\tSN://'| sed 's/\tLN:/\t/' > genome.txt
+    bedtools sort -g genome.txt -i ${sample_ID}.bed  > ${sample_ID}.sorted.bed
+    bedtools intersect -sorted -g genome.txt -a ${sample_ID}.sorted.bed -b ${bam}  -wa -wb -f 1 >  ${sample_ID}.temp 
     awk '{if (\$10==255) print }' ${sample_ID}.temp > ${sample_ID}.txt
     """
 
