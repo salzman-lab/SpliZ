@@ -41,6 +41,16 @@ You may need to modify the [executor scope](https://www.nextflow.io/docs/latest/
             -r main \
             -latest \
             -profile small_test_data,sherlock
+            
+ 5. Run the pipeline on your own dataset.
+    1. Edit your config file with the parameters below. (You can use `/small_data/small.config` as a template, be sure to include any memory or time paramters.)
+    2. Run with your config file:
+    ```
+    nextflow run salzmanlab/spliz \
+        -r main \
+        -latest \
+        -c YOUR_CONFIG_HERE.conf
+    ```
 
 
 See [usage docs](https://nf-co.re/spliz/usage) for all of the available options when running the pipeline.
