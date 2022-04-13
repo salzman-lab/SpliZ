@@ -125,7 +125,7 @@ This repositiory contains code to perform the analyses in this paper:
 
 > **The SpliZ generalizes “Percent Spliced In” to reveal regulated splicing at single-cell resolution**
 >
-> Julia Eve Olivieri, Roozbeh Dehghannasiri, Julia Salzman.
+> Julia Eve Olivieri*, Roozbeh Dehghannasiri*, Julia Salzman.
 >
 > _Nature Methods_ 2022 Mar 3. doi: [10.1038/s41592-022-01400-x](https://doi.org/10.1038/s41592-022-01400-x).
 
