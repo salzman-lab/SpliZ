@@ -32,7 +32,6 @@ process FIND_SPLIZ_SITES {
         ${third_evec} \\
         ${libraryType} \\
         ${geneMat_samplesheet}
-
     """
 
 }

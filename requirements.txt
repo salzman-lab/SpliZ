@@ -1,0 +1,12 @@
+###### Requirements with Version Specifiers ######
+
+argparse == 1.4.0
+datetime == 4.4
+numpy == 1.22.3
+pandas == 1.4.1
+pysam == 0.16.0.1
+utils == 1.0.1
+tqdm == 4.62.0
+pyarrow == 5.0.0
+scipy == 1.7.1
+statsmodels == 0.12.2
