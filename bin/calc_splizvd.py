@@ -368,7 +368,6 @@ def main():
     scz_dict = pd.Series(calc_dfs[let]["scaled_z_" + let].values,index=calc_dfs[let].cell_gene).to_dict()
     df["scaled_z_" + let] = df["cell_gene"].map(scz_dict)
 
-  df["cov"] = df["gene"].map(grouped.apply(lambda x: x['z_Start'].cov(x['z_End'])))
 
   idx = df[df["z_Start"].isna()].index
   df.loc[idx,"z"] = -df.loc[idx,"z_End"]
@@ -385,6 +384,8 @@ def main():
   logging.info("Avg z")
   
   if not light:
+    df["cov"] = df["gene"].map(grouped.apply(lambda x: x['z_Start'].cov(x['z_End'])))
+
     # average two scores for split z
     for v in split_dict.values():
       for y in v:
