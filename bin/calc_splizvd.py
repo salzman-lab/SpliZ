@@ -254,7 +254,7 @@ def main():
   df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
 
   # add domain columns
-  letters = ["Start", "End"]
+  letters = ["A", "B"]
   for let in letters:
 
     if domain_breakdown:
