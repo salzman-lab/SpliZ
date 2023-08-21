@@ -231,17 +231,17 @@ def main():
     split_dict = {True : ["ann"], False : ["unann"]}
 
   # remove constitutive splicing
-  df["posA_group"] = df["juncStart"].astype(str) + df["gene"]
-  df["posB_group"] = df["juncEnd"].astype(str) + df["gene"]
+  df["posStart_group"] = df["juncStart"].astype(str) + df["gene"]
+  df["posEnd_group"] = df["juncEnd"].astype(str) + df["gene"]
 
-  df["rank_acc"] = df.groupby("posA_group")["juncEnd"].rank(method="dense")
-  df["rank_don"] = df.groupby("posB_group")["juncStart"].rank(method="dense")
+  df["rank_acc"] = df.groupby("posStart_group")["juncEnd"].rank(method="dense")
+  df["rank_don"] = df.groupby("posEnd_group")["juncStart"].rank(method="dense")
   # remove "almost consistutive splicing"
   if args.rank_quant > 0:
-    let_dict2 = {"A" : "acc", "B" : "don"}
+    let_dict2 = {"Start" : "acc", "End" : "don"}
     
     # threshold ranks for each donor and acceptor
-    for let in ["A","B"]:
+    for let in ["Start","End"]:
       df["bottom_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=args.rank_quant))
       df["top_{}_quant".format(let_dict2[let])] = df["pos{}_group".format(let)].map(df.groupby("pos{}_group".format(let))["rank_{}".format(let_dict2[let])].quantile(q=1 - args.rank_quant))
       df["rank_{}".format(let_dict2[let])] = df[["bottom_{}_quant".format(let_dict2[let]),"rank_{}".format(let_dict2[let])]].max(axis=1)
@@ -250,11 +250,11 @@ def main():
       # start ranks at 1 (in case 1 is removed by quantiling)
       df["rank_{}".format(let_dict2[let])] = df["rank_{}".format(let_dict2[let])] - df["bottom_{}_quant".format(let_dict2[let])] + 1
 
-  df["max_rank_acc"] = df["posA_group"].map(df.groupby("posA_group")["rank_acc"].max())
-  df["max_rank_don"] = df["posB_group"].map(df.groupby("posB_group")["rank_don"].max())
+  df["max_rank_acc"] = df["posStart_group"].map(df.groupby("posStart_group")["rank_acc"].max())
+  df["max_rank_don"] = df["posEnd_group"].map(df.groupby("posEnd_group")["rank_don"].max())
 
   # add domain columns
-  letters = ["A", "B"]
+  letters = ["Start", "End"]
   for let in letters:
 
     if domain_breakdown:
